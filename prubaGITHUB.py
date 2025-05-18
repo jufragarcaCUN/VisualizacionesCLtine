@@ -346,4 +346,74 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
 
 def mostrar_acordeones(df):
     if df is None or df.empty:
-        st.warning("⚠️ El DataFrame para los acordeones está vacío o no fue
+        st.warning("⚠️ El DataFrame para los acordeones está vacío o no fue cargado correctamente.") # <-- LINEA CORREGIDA Y COMPLETA
+        return # <-- Asegúrate de que este return y todo lo demás de la función esté incluido
+
+    if 'asesor' not in df.columns:
+         st.error("❌ El DataFrame para los acordeones no contiene la columna esencial: 'asesor'.")
+         st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
+         return
+
+    st.markdown("<h3 style='text-align: center;'>🔍 Detalle Completo por Asesor</h3>", unsafe_allow_html=True)
+
+    for index, fila in df.iterrows():
+        nombre_asesor = fila.get('asesor', f"Asesor Desconocido {index}")
+
+        with st.expander(f"🧑 Detalle de: **{nombre_asesor}**"):
+            columnas_a_mostrar = [col for col in df.columns if col != 'asesor']
+
+            if not columnas_a_mostrar:
+                 st.info(f"ℹ️ No hay columnas adicionales para mostrar en el detalle de {nombre_asesor}.")
+                 continue
+
+            for col_name in columnas_a_mostrar:
+                 value = fila[col_name]
+
+                 if pd.isna(value):
+                      display_value = "N/A"
+                 elif isinstance(value, (int, float)):
+                      try:
+                          display_value = f"{value:.1f}"
+                          if ('%' in col_name or '_porcentaje' in col_name.lower()) and not pd.isna(value):
+                               display_value += "%"
+                          elif value == int(value):
+                                display_value = str(int(value))
+
+
+                      except ValueError:
+                           display_value = str(value)
+                 else:
+                     display_value = str(value)
+
+
+                 emoji = "🔹"
+                 if 'saludo' in col_name.lower(): emoji = "👋"
+                 elif 'presentacion' in col_name.lower(): emoji = "🏢"
+                 elif 'politica' in col_name.lower(): emoji = "🔊"
+                 elif 'valor' in col_name.lower(): emoji = "💡"
+                 elif 'costos' in col_name.lower(): emoji = "💰"
+                 elif 'cierre' in col_name.lower() or 'despedida' in col_name.lower(): emoji = "🚪"
+                 elif 'normativo' in col_name.lower(): emoji = "📜"
+                 elif 'puntaje' in col_name.lower(): emoji = "⭐"
+                 elif 'sentimiento' in col_name.lower() or 'polarity' in col_name.lower() or 'subjectivity' in col_name.lower(): emoji = "😊"
+                 elif '_cumple' in col_name.lower() or 'total_llamadas' in col_name.lower(): emoji = "📞"
+
+
+                 st.markdown(f"{emoji} **{col_name.replace('_', ' ').capitalize()}:** {display_value}")
+
+
+def main():
+
+    insetCodigo()
+
+    graficar_puntaje_total(df_puntajeAsesores)
+    graficar_asesores_metricas_heatmap(df_puntajeAsesores)
+    graficar_polaridad_subjetividad_gauges(df_POlaVssub)
+    graficar_polaridad_por_asesor_barras_horizontales(df_POlaVssub)
+
+
+    mostrar_acordeones(df_acordeon)
+
+
+if __name__ == '__main__':
+    main()
