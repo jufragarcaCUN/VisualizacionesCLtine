@@ -386,4 +386,29 @@ def mostrar_acordeones(df):
                  elif '_cumple' in col_name.lower() or 'total_llamadas' in col_name.lower(): emoji = "📞"
 
                  # Mostrar
-                 st.markdown(f"{emoji} **{col_name.replace('_', ' ').
+                 st.markdown(f"{emoji} **{col_name.replace('_', ' ').capitalize()}:** {display_value}")
+
+
+# ========================================
+# === FUNCIÓN PRINCIPAL STREAMLIT =======
+# ========================================
+def main():
+
+
+    insetCodigo()
+
+    # Llamada a las funciones de graficas y acordeones
+    graficar_puntaje_total(df_puntajeAsesores)
+    graficar_asesores_metricas_heatmap(df_puntajeAsesores)
+    graficar_polaridad_subjetividad_gauges(df_POlaVssub)
+    graficar_polaridad_por_asesor_barras_horizontales(df_POlaVssub)
+
+    # --- Llamada a la funcion de acordeones ---
+    # Pasa el DataFrame df_acordeon (que debe contener todas las columnas del merge)
+    mostrar_acordeones(df_acordeon) # Corregido: pasar df_acordeon
+
+# ========================================
+# === EJECUCIÓN DEL PROGRAMA ============
+# ========================================
+if __name__ == '__main__':
+    main()
