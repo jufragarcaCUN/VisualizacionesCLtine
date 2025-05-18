@@ -21,8 +21,7 @@ import plotly.graph_objects as go
 # ========================================
 # === CONFIGURACIÓN DE STREAMLIT PAGE ===
 # ========================================
-# FIX: Removido el argumento 'title' porque la version de Streamlit en el entorno no lo reconoce.
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", title="Dashboard Cltiene")
 
 
 # ========================================
@@ -171,7 +170,13 @@ def graficar_puntaje_total(df):
         labels={"puntaje_total": "Puntaje Total Ponderado", "asesor": "Asesor"}
     )
     fig.update_traces(texttemplate='%{text:.1f}', textposition='outside')
-    fig.update_layout(height=600, xaxis_tickangle=-45, plot_bgcolor="white", font=dict(family="Arial", size=12), title_x=0.5)
+    fig.update_layout(
+        height=1200, # DUPLICADO altura
+        xaxis_tickangle=-45,
+        plot_bgcolor="white",
+        font=dict(family="Arial", size=24), # DUPLICADO tamaño de fuente
+        title_x=0.5
+        )
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -208,9 +213,9 @@ def graficar_asesores_metricas_heatmap(df):
         title="Heatmap: Asesor vs. Métricas con Porcentaje (%)",
         xaxis_title="Métrica (%)",
         yaxis_title="Asesor",
-        font=dict(family="Arial", size=12),
+        font=dict(family="Arial", size=24), # DUPLICADO tamaño de fuente
         plot_bgcolor='white',
-        height=max(400, len(df_heatmap_data.index) * 20 + 150),
+        height=max(800, len(df_heatmap_data.index) * 20 + 300), # DUPLICADO altura base y offset
         title_x=0.5
     )
 
@@ -253,11 +258,16 @@ def graficar_polaridad_subjetividad_gauges(df):
             ],
             threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75,'value': 0 }
         ),
-        title={'text': "Polaridad Promedio General", 'font': {'size': 18}},
-        number={'font': {'size': 24}}
+        title={'text': "Polaridad Promedio General", 'font': {'size': 36}}, # DUPLICADO tamaño fuente titulo
+        number={'font': {'size': 48}} # DUPLICADO tamaño fuente numero
     ))
 
-    fig_polaridad.update_layout(height=250, margin=dict(l=10, r=10, t=40, b=10))
+    fig_polaridad.update_layout(
+        height=500, # DUPLICADO altura
+        margin=dict(l=10, r=10, t=60, b=10), # Ajustado margen superior
+        font=dict(size=24) # DUPLICADO tamaño fuente general (ticks)
+        )
+
 
     fig_subjetividad = go.Figure(go.Indicator(
         mode="gauge+number",
@@ -272,11 +282,15 @@ def graficar_polaridad_subjetividad_gauges(df):
             ],
              threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75,'value': 0.5}
         ),
-        title={'text': "Subjetividad Promedio General", 'font': {'size': 18}},
-        number={'font': {'size': 24}}
+        title={'text': "Subjetividad Promedio General", 'font': {'size': 36}}, # DUPLICADO tamaño fuente titulo
+        number={'font': {'size': 48}} # DUPLICADO tamaño fuente numero
     ))
 
-    fig_subjetividad.update_layout(height=250, margin=dict(l=10, r=10, t=40, b=10))
+    fig_subjetividad.update_layout(
+        height=500, # DUPLICADO altura
+        margin=dict(l=10, r=10, t=60, b=10), # Ajustado margen superior
+        font=dict(size=24) # DUPLICADO tamaño fuente general (ticks)
+        )
 
     col1, col2 = st.columns(2)
 
@@ -320,8 +334,9 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         yaxis_title="Asesor",
         xaxis_title="Polaridad Promedio",
         plot_bgcolor="white",
-        height=max(400, len(df_polaridad_avg.index) * 30 + 100),
-        title_x=0.5
+        height=max(800, len(df_polaridad_avg.index) * 30 + 200), # DUPLICADO altura base y offset
+        title_x=0.5,
+        font=dict(size=24) # DUPLICADO tamaño de fuente
     )
 
     st.plotly_chart(fig, use_container_width=True)
