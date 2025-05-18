@@ -21,8 +21,8 @@ import plotly.graph_objects as go
 # ========================================
 # === CONFIGURACIÓN DE STREAMLIT PAGE ===
 # ========================================
-# ASEGURARSE QUE ESTA LINEA NO TIENE INDENTACION AL PRINCIPIO
-st.set_page_config(layout="wide", title="Dashboard Cltiene")
+# FIX: Removido el argumento 'title' porque la version de Streamlit en el entorno no lo reconoce.
+st.set_page_config(layout="wide")
 
 
 # ========================================
@@ -377,7 +377,7 @@ def mostrar_acordeones(df):
                  elif 'costos' in col_name.lower(): emoji = "💰"
                  elif 'cierre' in col_name.lower() or 'despedida' in col_name.lower(): emoji = "🚪"
                  elif 'normativo' in col_name.lower(): emoji = "📜"
-                 elif 'puntaje' in col_name.lower(): emoji = "⭐" # <-- Línea revisada
+                 elif 'puntaje' in col_name.lower(): emoji = "⭐"
                  elif 'sentimiento' in col_name.lower() or 'polarity' in col_name.lower() or 'subjectivity' in col_name.lower(): emoji = "😊"
                  elif '_cumple' in col_name.lower() or 'total_llamadas' in col_name.lower(): emoji = "📞"
 
@@ -387,7 +387,6 @@ def mostrar_acordeones(df):
 
 def main():
 
-    # FIX: Asegurar que la primera línea dentro de main() tenga la indentación correcta (4 espacios)
     insetCodigo()
 
     graficar_puntaje_total(df_puntajeAsesores)
@@ -401,4 +400,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-	
