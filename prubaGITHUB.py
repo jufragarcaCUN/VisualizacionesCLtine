@@ -21,7 +21,9 @@ import plotly.graph_objects as go
 # ========================================
 # === CONFIGURACIÓN DE STREAMLIT PAGE ===
 # ========================================
-st.set_page_config(layout="wide", title="Dashboard Cltiene")
+# FIX: Removido el argumento 'title' porque la version de Streamlit en el entorno no lo reconoce.
+# Asegúrate de que esta línea sea SOLO: st.set_page_config(layout="wide")
+st.set_page_config(layout="wide")
 
 
 # ========================================
@@ -171,10 +173,10 @@ def graficar_puntaje_total(df):
     )
     fig.update_traces(texttemplate='%{text:.1f}', textposition='outside')
     fig.update_layout(
-        height=1200, # DUPLICADO altura
+        height=1200,
         xaxis_tickangle=-45,
         plot_bgcolor="white",
-        font=dict(family="Arial", size=24), # DUPLICADO tamaño de fuente
+        font=dict(family="Arial", size=24),
         title_x=0.5
         )
     st.plotly_chart(fig, use_container_width=True)
@@ -213,9 +215,9 @@ def graficar_asesores_metricas_heatmap(df):
         title="Heatmap: Asesor vs. Métricas con Porcentaje (%)",
         xaxis_title="Métrica (%)",
         yaxis_title="Asesor",
-        font=dict(family="Arial", size=24), # DUPLICADO tamaño de fuente
+        font=dict(family="Arial", size=24),
         plot_bgcolor='white',
-        height=max(800, len(df_heatmap_data.index) * 20 + 300), # DUPLICADO altura base y offset
+        height=max(800, len(df_heatmap_data.index) * 20 + 300),
         title_x=0.5
     )
 
@@ -258,14 +260,14 @@ def graficar_polaridad_subjetividad_gauges(df):
             ],
             threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75,'value': 0 }
         ),
-        title={'text': "Polaridad Promedio General", 'font': {'size': 36}}, # DUPLICADO tamaño fuente titulo
-        number={'font': {'size': 48}} # DUPLICADO tamaño fuente numero
+        title={'text': "Polaridad Promedio General", 'font': {'size': 36}},
+        number={'font': {'size': 48}}
     ))
 
     fig_polaridad.update_layout(
-        height=500, # DUPLICADO altura
-        margin=dict(l=10, r=10, t=60, b=10), # Ajustado margen superior
-        font=dict(size=24) # DUPLICADO tamaño fuente general (ticks)
+        height=500,
+        margin=dict(l=10, r=10, t=60, b=10),
+        font=dict(size=24)
         )
 
 
@@ -282,14 +284,14 @@ def graficar_polaridad_subjetividad_gauges(df):
             ],
              threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75,'value': 0.5}
         ),
-        title={'text': "Subjetividad Promedio General", 'font': {'size': 36}}, # DUPLICADO tamaño fuente titulo
-        number={'font': {'size': 48}} # DUPLICADO tamaño fuente numero
+        title={'text': "Subjetividad Promedio General", 'font': {'size': 36}},
+        number={'font': {'size': 48}}
     ))
 
     fig_subjetividad.update_layout(
-        height=500, # DUPLICADO altura
-        margin=dict(l=10, r=10, t=60, b=10), # Ajustado margen superior
-        font=dict(size=24) # DUPLICADO tamaño fuente general (ticks)
+        height=500,
+        margin=dict(l=10, r=10, t=60, b=10),
+        font=dict(size=24)
         )
 
     col1, col2 = st.columns(2)
@@ -334,9 +336,9 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         yaxis_title="Asesor",
         xaxis_title="Polaridad Promedio",
         plot_bgcolor="white",
-        height=max(800, len(df_polaridad_avg.index) * 30 + 200), # DUPLICADO altura base y offset
+        height=max(800, len(df_polaridad_avg.index) * 30 + 200),
         title_x=0.5,
-        font=dict(size=24) # DUPLICADO tamaño de fuente
+        font=dict(size=24)
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -344,74 +346,4 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
 
 def mostrar_acordeones(df):
     if df is None or df.empty:
-        st.warning("⚠️ El DataFrame para los acordeones está vacío o no fue cargado correctamente.")
-        return
-
-    if 'asesor' not in df.columns:
-         st.error("❌ El DataFrame para los acordeones no contiene la columna esencial: 'asesor'.")
-         st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
-         return
-
-    st.markdown("<h3 style='text-align: center;'>🔍 Detalle Completo por Asesor</h3>", unsafe_allow_html=True)
-
-    for index, fila in df.iterrows():
-        nombre_asesor = fila.get('asesor', f"Asesor Desconocido {index}")
-
-        with st.expander(f"🧑 Detalle de: **{nombre_asesor}**"):
-            columnas_a_mostrar = [col for col in df.columns if col != 'asesor']
-
-            if not columnas_a_mostrar:
-                 st.info(f"ℹ️ No hay columnas adicionales para mostrar en el detalle de {nombre_asesor}.")
-                 continue
-
-            for col_name in columnas_a_mostrar:
-                 value = fila[col_name]
-
-                 if pd.isna(value):
-                      display_value = "N/A"
-                 elif isinstance(value, (int, float)):
-                      try:
-                          display_value = f"{value:.1f}"
-                          if ('%' in col_name or '_porcentaje' in col_name.lower()) and not pd.isna(value):
-                               display_value += "%"
-                          elif value == int(value):
-                                display_value = str(int(value))
-
-
-                      except ValueError:
-                           display_value = str(value)
-                 else:
-                     display_value = str(value)
-
-
-                 emoji = "🔹"
-                 if 'saludo' in col_name.lower(): emoji = "👋"
-                 elif 'presentacion' in col_name.lower(): emoji = "🏢"
-                 elif 'politica' in col_name.lower(): emoji = "🔊"
-                 elif 'valor' in col_name.lower(): emoji = "💡"
-                 elif 'costos' in col_name.lower(): emoji = "💰"
-                 elif 'cierre' in col_name.lower() or 'despedida' in col_name.lower(): emoji = "🚪"
-                 elif 'normativo' in col_name.lower(): emoji = "📜"
-                 elif 'puntaje' in col_name.lower(): emoji = "⭐"
-                 elif 'sentimiento' in col_name.lower() or 'polarity' in col_name.lower() or 'subjectivity' in col_name.lower(): emoji = "😊"
-                 elif '_cumple' in col_name.lower() or 'total_llamadas' in col_name.lower(): emoji = "📞"
-
-
-                 st.markdown(f"{emoji} **{col_name.replace('_', ' ').capitalize()}:** {display_value}")
-
-
-def main():
-
-    insetCodigo()
-
-    graficar_puntaje_total(df_puntajeAsesores)
-    graficar_asesores_metricas_heatmap(df_puntajeAsesores)
-    graficar_polaridad_subjetividad_gauges(df_POlaVssub)
-    graficar_polaridad_por_asesor_barras_horizontales(df_POlaVssub)
-
-
-    mostrar_acordeones(df_acordeon)
-
-
-if __name__ == '__main__':
-    main()
+        st.warning("⚠️ El DataFrame para los acordeones está vacío o no fue
