@@ -1,3 +1,6 @@
+# ========================================
+# === IMPORTACIONES NECESARIAS ==========
+# ========================================
 import os
 import re
 import sys
@@ -15,32 +18,54 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-
+# ========================================
+# === CONFIGURACIÓN DE STREAMLIT PAGE ===
+# ========================================
+# ASEGURARSE QUE ESTA LINEA NO TIENE INDENTACION AL PRINCIPIO
 st.set_page_config(layout="wide", title="Dashboard Cltiene")
 
 
-
+# ========================================
+# === RUTAS A IMÁGENES ===================
+# ========================================
+# Archivos de imagen (deben estar en tu repositorio de GitHub)
+# >>> ASUMIENDO que los archivos .png y .jpeg estan en la MISMA carpeta que tu script Python en GitHub: <<<
 logoCun = "CUN-1200X1200.png"
 logoCltiene = "clTiene2.jpeg"
 
+# >>> SI los pusiste en una subcarpeta dentro de tu repositorio, por ejemplo './images/': <<<
+# logoCun = "./images/CUN-1200X1200.png"
+# logoCltiene = "./images/clTiene2.jpeg"
 
 
-
-
+# ========================================
+# === RUTAS A ARCHIVOS DE DATOS =========
+# ========================================
+# Archivos de datos (deben estar en tu repositorio de GitHub)
+# >>> ASUMIENDO que estos archivos .xlsx estan en la MISMA carpeta que tu script Python en GitHub: <<<
 ruta_archivo_reporte_puntaje = "reporte_llamadas_asesores.xlsx"
 ruta_archivo_sentimientos = "sentimientos_textblob.xlsx"
-
+# Nombre del archivo merge para el acordeon
 nombre_archivo_reporte_acordeon = "acordon1.xlsx"
-
+# Variable que guarda la ruta del archivo merge (ahora es relativa)
 puntejeAcordeoneros = nombre_archivo_reporte_acordeon
 
+# >>> SI los pusiste en una subcarpeta dentro de tu repositorio, por ejemplo './data/': <<<
+# ruta_archivo_reporte_puntaje = "./data/reporte_llamadas_asesores.xlsx"
+# ruta_archivo_sentimientos = "./data/sentimientos_textblob.xlsx"
+# puntejeAcordeoneros = "./data/acordon1.xlsx"
 
 
-
+# ========================================
+# === CARGA DE DATAFRAMES ===============
+# ========================================
+# --- CARGA DEL DATAFRAME DE PUNTAJE DE ASESORES ---
 try:
+    # Usa la ruta relativa definida arriba
     df_puntajeAsesores = pd.read_excel(ruta_archivo_reporte_puntaje)
     print(f"✅ DataFrame df_puntajeAsesores cargado exitosamente desde: {ruta_archivo_reporte_puntaje}")
 except FileNotFoundError:
+    # Mensajes de error y warning ajustados para el contexto de despliegue
     print(f"❌ ERROR: Archivo de Puntajes NO encontrado en: {ruta_archivo_reporte_puntaje}. Asegúrate de que esté en el repositorio con el nombre correcto.")
     st.error(f"❌ No se encontró el archivo de Puntajes: {ruta_archivo_reporte_puntaje}. Asegúrate de que esté en el repositorio con el nombre correcto.")
     df_puntajeAsesores = pd.DataFrame()
@@ -49,11 +74,13 @@ except Exception as e:
     st.error(f"❌ Error al cargar puntajes desde '{ruta_archivo_reporte_puntaje}': {e}")
     df_puntajeAsesores = pd.DataFrame()
 
-
+# --- CARGA DEL DATAFRAME DE SENTIMIENTOS ---
 try:
+    # Usa la ruta relativa definida arriba
     df_POlaVssub = pd.read_excel(ruta_archivo_sentimientos)
     print(f"✅ DataFrame df_POlaVssub cargado exitosamente desde: {ruta_archivo_sentimientos}")
 except FileNotFoundError:
+    # Mensajes de error y warning ajustados
     print(f"❌ ERROR: Archivo de Sentimientos NO encontrado en: {ruta_archivo_sentimientos}. Asegúrate de que esté en el repositorio con el nombre correcto.")
     st.error(f"❌ No se encontró el archivo de Sentimientos: {ruta_archivo_sentimientos}. Asegúrate de que esté en el repositorio con el nombre correcto.")
     df_POlaVssub = pd.DataFrame()
@@ -62,11 +89,14 @@ except Exception as e:
     st.error(f"❌ Error al cargar sentimientos desde '{ruta_archivo_sentimientos}': {e}")
     df_POlaVssub = pd.DataFrame()
 
-
+# --- CARGA DEL DATAFRAME PARA ACORDEONES (Archivo Merge) ---
+# Asegurate de que el archivo 'acordon1.xlsx' esté en el repositorio con la ruta correcta.
 try:
+    # Usa la ruta relativa definida arriba
     df_acordeon = pd.read_excel(puntejeAcordeoneros)
     print(f"✅ DataFrame df_acordeon cargado exitosamente desde: {puntejeAcordeoneros}")
 except FileNotFoundError:
+    # Mensajes de error y warning ajustados
     print(f"❌ ERROR: Archivo de Acordeon NO encontrado en: {puntejeAcordeoneros}. Asegúrate de que esté en el repositorio con el nombre correcto.")
     st.error(f"❌ No se encontró el archivo de Acordeon: {puntejeAcordeoneros}. Asegúrate de que esté en el repositorio con el nombre correcto.")
     df_acordeon = pd.DataFrame()
@@ -76,38 +106,48 @@ except Exception as e:
     df_acordeon = pd.DataFrame()
 
 
-
+# ========================================
+# === FUNCIONES DE SOPORTE ==============
+# ========================================
+# Esta funcion ahora espera rutas relativas a los archivos del repositorio
 def get_image_base64(image_path):
     try:
+        # Abre el archivo usando la ruta relativa (Streamlit Cloud lo encontrara si esta en el repo)
         with open(image_path, "rb") as f:
             return base64.b64encode(f.read()).decode()
     except Exception as e:
+        # Muy util ver estos errores en los logs de Streamlit Cloud si la imagen no carga
         print(f"Error loading image {image_path}: {e}")
         return None
 
+# El resto de insetCodigo() usa las variables de ruta relativa definidas arriba
 def insetCodigo():
     col1, col2 = st.columns(2)
     img_height = "150px"
     img_style = f"height: {img_height}; object-fit: contain; margin: auto; display: block;"
 
-
+    # Usar las variables de ruta relativa definidas arriba (logoCun, logoCltiene)
     img1_base64 = get_image_base64(logoCun)
     img2_base64 = get_image_base64(logoCltiene)
 
     with col1:
         if img1_base64:
+            # Asegurate que el tipo MIME es correcto (.png)
             st.markdown(f'<img src="data:image/png;base64,{img1_base64}" style="{img_style}"/>', unsafe_allow_html=True)
         else:
-            st.warning(f"⚠️ Imagen no encontrada: {logoCun}")
+            st.warning(f"⚠️ Imagen no encontrada o no pudo ser cargada: {logoCun}")
 
     with col2:
         if img2_base64:
+             # Asegurate que el tipo MIME es correcto (.jpeg)
             st.markdown(f'<img src="data:image/jpeg;base64,{img2_base64}" style="{img_style}"/>', unsafe_allow_html=True)
         else:
-            st.warning(f"⚠️ Imagen no encontrada: {logoCltiene}")
+            st.warning(f"⚠️ Imagen no encontrada o no pudo ser cargada: {logoCltiene}")
 
 
-
+# ========================================
+# === GRÁFICAS ===========================
+# ========================================
 def graficar_puntaje_total(df):
     if df is None or df.empty or 'asesor' not in df.columns or 'puntaje_total' not in df.columns:
         st.warning("⚠️ Datos incompletos para la gráfica de puntaje total.")
@@ -337,4 +377,28 @@ def mostrar_acordeones(df):
                  elif 'costos' in col_name.lower(): emoji = "💰"
                  elif 'cierre' in col_name.lower() or 'despedida' in col_name.lower(): emoji = "🚪"
                  elif 'normativo' in col_name.lower(): emoji = "📜"
-                 elif 'puntaje' in col_name.lower(): emoji = "
+                 elif 'puntaje' in col_name.lower(): emoji = "⭐" # <-- Línea revisada
+                 elif 'sentimiento' in col_name.lower() or 'polarity' in col_name.lower() or 'subjectivity' in col_name.lower(): emoji = "😊"
+                 elif '_cumple' in col_name.lower() or 'total_llamadas' in col_name.lower(): emoji = "📞"
+
+
+                 st.markdown(f"{emoji} **{col_name.replace('_', ' ').capitalize()}:** {display_value}")
+
+
+def main():
+
+    # FIX: Asegurar que la primera línea dentro de main() tenga la indentación correcta (4 espacios)
+    insetCodigo()
+
+    graficar_puntaje_total(df_puntajeAsesores)
+    graficar_asesores_metricas_heatmap(df_puntajeAsesores)
+    graficar_polaridad_subjetividad_gauges(df_POlaVssub)
+    graficar_polaridad_por_asesor_barras_horizontales(df_POlaVssub)
+
+
+    mostrar_acordeones(df_acordeon)
+
+
+if __name__ == '__main__':
+    main()
+	
