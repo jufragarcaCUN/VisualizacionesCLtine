@@ -6,11 +6,11 @@ import re
 import sys
 import unicodedata
 import base64
-from pathlib import Path
+from pathlib import Path # Aunque ya no usamos Path para las rutas de archivos de datos/imagenes, se deja por si se usa en otra parte del script
 from collections import defaultdict
 
 import pandas as pd
-# Mantener solo las importaciones necesarias para el código visible o que se sabe que usas
+# Mantener solo las importaciones necesarias
 from textblob import TextBlob
 
 import streamlit as st
@@ -20,29 +20,39 @@ import plotly.graph_objects as go
 # ========================================
 # === CONFIGURACIÓN DE STREAMLIT PAGE ===
 # ========================================
-st.set_page_config(layout="wide")
+# ASEGURARSE QUE ESTA LINEA NO TIENE INDENTACION
+st.set_page_config(layout="wide", title="Dashboard Cltiene") # Añadido titulo de nuevo
 
 
 # ========================================
 # === RUTAS A IMÁGENES ===================
 # ========================================
-carpetaImagenes = Path(r"C:\Users\juan_garnicac\OneDrive - Corporación Unificada Nacional de Educación Superior - CUN\Imágenes")
-logoCun = carpetaImagenes / "CUN-1200X1200.png"
-logoCltiene = carpetaImagenes / "clTiene2.jpeg"
+# Archivos de imagen (deben estar en tu repositorio de GitHub)
+# Asumiendo que estos archivos .png y .jpeg estan en la MISMA carpeta que tu script Python en GitHub:
+logoCun = "CUN-1200X1200.png"
+logoCltiene = "clTiene2.jpeg"
+
+# Si los pusiste en una subcarpeta dentro de tu repositorio, por ejemplo './images/':
+# logoCun = "./images/CUN-1200X1200.png"
+# logoCltiene = "./images/clTiene2.jpeg"
+
 
 # ========================================
 # === RUTAS A ARCHIVOS DE DATOS =========
 # ========================================
-carpeta_principal = Path(r"C:\Users\juan_garnicac\OneDrive - Corporación Unificada Nacional de Educación Superior - CUN\Documentos\cltiene\audiosCltiene\cltieneAudios")
-directorio_principal = carpeta_principal / "TranscribirAudios"
-
-# Archivos específicos usando las rutas base definidas
-ruta_archivo_reporte_puntaje = directorio_principal / "reporte_llamadas_asesores.xlsx"
-ruta_archivo_sentimientos = directorio_principal / "sentimientos_textblob.xlsx"
+# Archivos de datos (deben estar en tu repositorio de GitHub)
+# Asumiendo que estos archivos .xlsx estan en la MISMA carpeta que tu script Python en GitHub:
+ruta_archivo_reporte_puntaje = "reporte_llamadas_asesores.xlsx"
+ruta_archivo_sentimientos = "sentimientos_textblob.xlsx"
 # Nombre del archivo merge para el acordeon
 nombre_archivo_reporte_acordeon = "acordon1.xlsx"
-# Variable que guarda la ruta completa al archivo merge
-puntejeAcordeoneros = directorio_principal / nombre_archivo_reporte_acordeon
+# Variable que guarda la ruta del archivo merge (ahora es relativa)
+puntejeAcordeoneros = nombre_archivo_reporte_acordeon
+
+# Si los pusiste en una subcarpeta dentro de tu repositorio, por ejemplo './data/':
+# ruta_archivo_reporte_puntaje = "./data/reporte_llamadas_asesores.xlsx"
+# ruta_archivo_sentimientos = "./data/sentimientos_textblob.xlsx"
+# puntejeAcordeoneros = "./data/acordon1.xlsx"
 
 
 # ========================================
@@ -53,8 +63,8 @@ try:
     df_puntajeAsesores = pd.read_excel(ruta_archivo_reporte_puntaje)
     print(f"✅ DataFrame df_puntajeAsesores cargado exitosamente desde: {ruta_archivo_reporte_puntaje}")
 except FileNotFoundError:
-    print(f"❌ ERROR: Archivo de Puntajes NO encontrado en: {ruta_archivo_reporte_puntaje}")
-    st.error(f"❌ No se encontró el archivo de Puntajes: {ruta_archivo_reporte_puntaje}")
+    print(f"❌ ERROR: Archivo de Puntajes NO encontrado en: {ruta_archivo_reporte_puntaje}. Asegúrate de que esté en el repositorio con el nombre correcto.")
+    st.error(f"❌ No se encontró el archivo de Puntajes: {ruta_archivo_reporte_puntaje}. Asegúrate de que esté en el repositorio con el nombre correcto.")
     df_puntajeAsesores = pd.DataFrame()
 except Exception as e:
     print(f"❌ ERROR: Falló al cargar df_puntajeAsesores desde '{ruta_archivo_reporte_puntaje}': {e}")
@@ -66,39 +76,41 @@ try:
     df_POlaVssub = pd.read_excel(ruta_archivo_sentimientos)
     print(f"✅ DataFrame df_POlaVssub cargado exitosamente desde: {ruta_archivo_sentimientos}")
 except FileNotFoundError:
-    print(f"❌ ERROR: Archivo de Sentimientos NO encontrado en: {ruta_archivo_sentimientos}")
-    st.error(f"❌ No se encontró el archivo de Sentimientos: {ruta_archivo_sentimientos}")
+    print(f"❌ ERROR: Archivo de Sentimientos NO encontrado en: {ruta_archivo_sentimientos}. Asegúrate de que esté en el repositorio con el nombre correcto.")
+    st.error(f"❌ No se encontró el archivo de Sentimientos: {ruta_archivo_sentimientos}. Asegúrate de que esté en el repositorio con el nombre correcto.")
     df_POlaVssub = pd.DataFrame()
 except Exception as e:
     print(f"❌ ERROR: Falló al cargar df_POlaVssub desde '{ruta_archivo_sentimientos}': {e}")
     st.error(f"❌ Error al cargar sentimientos desde '{ruta_archivo_sentimientos}': {e}")
     df_POlaVssub = pd.DataFrame()
 
-# --- CARGA DEL DATAFRAME PARA ACORDEONES ---
-# Este es el DataFrame que se usa para la funcion mostrar_acordeones
-# Asegurate de que el archivo 'acordon1.xlsx' haya sido creado (por el proceso de merge) antes de ejecutar este script Streamlit.
+# --- CARGA DEL DATAFRAME PARA ACORDEONES (Archivo Merge) ---
+# Asegurate de que el archivo 'acordon1.xlsx' esté en el repositorio.
 try:
     # Se carga el archivo merge 'acordon1.xlsx' usando la variable correcta
-    df_acordeon = pd.read_excel(puntejeAcordeoneros) # Corregido: usar puntejeAcordeoneros
+    df_acordeon = pd.read_excel(puntejeAcordeoneros)
     print(f"✅ DataFrame df_acordeon cargado exitosamente desde: {puntejeAcordeoneros}")
 except FileNotFoundError:
-    print(f"❌ ERROR: Archivo de Acordeon NO encontrado en: {puntejeAcordeoneros}") # Corregido: usar puntejeAcordeoneros
-    st.error(f"❌ No se encontró el archivo de Acordeon: {puntejeAcordeoneros}. Asegúrate de que el merge se haya ejecutado y guardado correctamente.") # Corregido: usar puntejeAcordeoneros
+    print(f"❌ ERROR: Archivo de Acordeon NO encontrado en: {puntejeAcordeoneros}. Asegúrate de que esté en el repositorio con el nombre correcto.")
+    st.error(f"❌ No se encontró el archivo de Acordeon: {puntejeAcordeoneros}. Asegúrate de que esté en el repositorio con el nombre correcto.")
     df_acordeon = pd.DataFrame()
 except Exception as e:
-    print(f"❌ ERROR: Falló al cargar df_acordeon desde '{puntejeAcordeoneros}': {e}") # Corregido: usar puntejeAcordeoneros
-    st.error(f"❌ Error al cargar acordeon desde '{puntejeAcordeoneros}': {e}") # Corregido: usar puntejeAcordeoneros
+    print(f"❌ ERROR: Falló al cargar df_acordeon desde '{puntejeAcordeoneros}': {e}")
+    st.error(f"❌ Error al cargar acordeon desde '{puntejeAcordeoneros}': {e}")
     df_acordeon = pd.DataFrame()
 
 
 # ========================================
 # === FUNCIONES DE SOPORTE ==============
 # ========================================
+# Nota: get_image_base64 ahora usa rutas relativas para los archivos de imagen
 def get_image_base64(image_path):
     try:
         with open(image_path, "rb") as f:
             return base64.b64encode(f.read()).decode()
-    except Exception:
+    except Exception as e:
+        # Puedes añadir un print o log aqui si quieres ver errores de carga de imagen en la consola del servidor
+        print(f"Error loading image {image_path}: {e}")
         return None
 
 def insetCodigo():
@@ -106,15 +118,21 @@ def insetCodigo():
     img_height = "150px"
     img_style = f"height: {img_height}; object-fit: contain; margin: auto; display: block;"
 
+    # Usar las variables de ruta relativa definidas arriba
+    img1_base64 = get_image_base64(logoCun)
+    img2_base64 = get_image_base64(logoCltiene)
+
     with col1:
-        img1_base64 = get_image_base64(logoCun)
         if img1_base64:
             st.markdown(f'<img src="data:image/png;base64,{img1_base64}" style="{img_style}"/>', unsafe_allow_html=True)
+        else:
+            st.warning(f"⚠️ Imagen no encontrada: {logoCun}")
 
     with col2:
-        img2_base64 = get_image_base64(logoCltiene)
         if img2_base64:
-            st.markdown(f'<img src="data:image/png;base64,{img2_base64}" style="{img_style}"/>', unsafe_allow_html=True)
+            st.markdown(f'<img src="data:image/jpeg;base64,{img2_base64}" style="{img_style}"/>', unsafe_allow_html=True)
+        else:
+            st.warning(f"⚠️ Imagen no encontrada: {logoCltiene}")
 
 
 # ========================================
@@ -302,104 +320,70 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
 # ========================================
 # === ANALISIS DETALLADO POR ASESOR (ACORDEONES) ===
 # ========================================
-# La función ahora espera que el DataFrame contenga las columnas necesarias
-# para mostrar el detalle (incluyendo las pares _%cumplimiento y _cumple, si se usa esa logica)
+# Esta función muestra TODAS las columnas del DataFrame para cada asesor dentro de un acordeón.
 def mostrar_acordeones(df):
-    import streamlit as st
-    import pandas as pd
-
     # Verifica si el DataFrame es válido y si tiene la columna 'asesor'
     if df is None or df.empty:
         st.warning("⚠️ El DataFrame para los acordeones está vacío o no fue cargado correctamente.")
         return
 
     if 'asesor' not in df.columns:
-        st.error("❌ El DataFrame para los acordeones no contiene la columna esencial: 'asesor'.")
-        st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
-        return
+         st.error("❌ El DataFrame para los acordeones no contiene la columna esencial: 'asesor'.")
+         st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
+         return
 
     st.markdown("<h3 style='text-align: center;'>🔍 Detalle Completo por Asesor</h3>", unsafe_allow_html=True)
 
-    # Iterar sobre cada asesor
+    # Iterar sobre cada asesor (fila) del DataFrame
     for index, fila in df.iterrows():
+        # Obtener el nombre del asesor
         nombre_asesor = fila.get('asesor', f"Asesor Desconocido {index}")
 
+        # Crear acordeon para el asesor
         with st.expander(f"🧑 Detalle de: **{nombre_asesor}**"):
+            # Obtener todas las columnas de la fila actual excepto 'asesor'
             columnas_a_mostrar = [col for col in df.columns if col != 'asesor']
 
             if not columnas_a_mostrar:
-                st.info(f"ℹ️ No hay columnas para mostrar en el detalle de {nombre_asesor}.")
-                continue
+                 st.info(f"ℹ️ No hay columnas adicionales para mostrar en el detalle de {nombre_asesor}.")
+                 continue
 
+            # Mostrar cada columna y su valor
             for col_name in columnas_a_mostrar:
-                value = fila[col_name]
+                 value = fila[col_name]
 
-                # Formatear valor para mostrar
-                if pd.isna(value):
-                    display_value = "N/A"
-                elif isinstance(value, (int, float)):
-                    try:
-                        # Mostrar como flotante con un decimal
-                        display_value = f"{value:.1f}"
+                 # Formatear valor
+                 if pd.isna(value):
+                      display_value = "N/A"
+                 elif isinstance(value, (int, float)):
+                      try:
+                          # Formato numerico simple (1 decimal)
+                          display_value = f"{value:.1f}"
+                          # Ajustes heuristicos para % o puntaje vs conteo (sin decimales si es entero exacto)
+                          if ('%' in col_name or '_porcentaje' in col_name.lower()) and not pd.isna(value):
+                               display_value += "%"
+                          elif value == int(value) and not pd.isna(value):
+                                display_value = str(int(value))
+                          # Si no es % o puntaje y es float, se queda con .1f por defecto
 
-                        # Ajustes según nombre de columna
-                        if '%' in col_name or '_porcentaje' in col_name.lower():
-                            display_value += "%"
-                        elif 'puntaje' in col_name.lower():
-                            display_value += ""  # sin % si es puntaje simple
-                        elif value == int(value):
-                            display_value = str(int(value))  # sin decimal si es entero exacto
 
-                    except ValueError:
-                        display_value = str(value)
-                else:
-                    display_value = str(value)
+                      except ValueError: # En caso de error inesperado en formato numerico
+                           display_value = str(value)
+                 else: # Para strings u otros tipos
+                     display_value = str(value)
 
-                # Asignar emoji según nombre de la columna (opcional)
-                if 'saludo' in col_name.lower():
-                    emoji = "👋"
-                elif 'presentacion' in col_name.lower():
-                    emoji = "🏢"
-                elif 'politica' in col_name.lower():
-                    emoji = "🔊"
-                elif 'valor' in col_name.lower():
-                    emoji = "💡"
-                elif 'costos' in col_name.lower():
-                    emoji = "💰"
-                elif 'cierre' in col_name.lower():
-                    emoji = "✅"
-                elif 'normativo' in col_name.lower():
-                    emoji = "📜"
-                elif 'puntaje' in col_name.lower():
-                    emoji = "⭐"
-                elif 'sentimiento' in col_name.lower():
-                    emoji = "😊"
-                else:
-                    emoji = "🔹"
+                 # Asignar emoji según nombre de la columna (opcional, heuristica)
+                 emoji = "🔹"
+                 if 'saludo' in col_name.lower(): emoji = "👋"
+                 elif 'presentacion' in col_name.lower(): emoji = "🏢"
+                 elif 'politica' in col_name.lower(): emoji = "🔊"
+                 elif 'valor' in col_name.lower(): emoji = "💡"
+                 elif 'costos' in col_name.lower(): emoji = "💰"
+                 elif 'cierre' in col_name.lower() or 'despedida' in col_name.lower(): emoji = "🚪"
+                 elif 'normativo' in col_name.lower(): emoji = "📜"
+                 elif 'puntaje' in col_name.lower(): emoji = "⭐"
+                 elif 'sentimiento' in col_name.lower() or 'polarity' in col_name.lower() or 'subjectivity' in col_name.lower(): emoji = "😊"
+                 elif '_cumple' in col_name.lower() or 'total_llamadas' in col_name.lower(): emoji = "📞"
 
-                # Mostrar
-                st.markdown(f"{emoji} **{col_name.replace('_', ' ').capitalize()}:** {display_value}")
-
-# ========================================
-# === FUNCIÓN PRINCIPAL STREAMLIT =======
-# ========================================
-def main():
-  
-
-    insetCodigo()
-
-    # Llamada a las funciones de graficas y acordeones
-    graficar_puntaje_total(df_puntajeAsesores)
-    graficar_asesores_metricas_heatmap(df_puntajeAsesores)
-    graficar_polaridad_subjetividad_gauges(df_POlaVssub)
-    graficar_polaridad_por_asesor_barras_horizontales(df_POlaVssub)
-
-    # --- Llamada a la funcion de acordeones ---
-    # Debes pasar el DataFrame que contiene los datos para los acordeones (el merge)
-    mostrar_acordeones(df_acordeon) # Corregido: pasar df_acordeon
-
-# ========================================
-# === EJECUCIÓN DEL PROGRAMA ============
-# ========================================
-if __name__ == '__main__':
-    main()
+                 # Mostrar
+                 st.markdown(f"{emoji} **{col_name.replace('_', ' ').
