@@ -364,7 +364,7 @@ def graficar_polaridad_subjetividad_gauges(df):
                 ),
                 title={'text': "Subjetividad Promedio General", 'font': {'size': 18}}, # Tamaño de fuente original
                 number={'font': {'size': 24}} # Tamaño de fuente original
-            ))
+            ),
             fig_subjetividad.update_layout(
                  height=700, # Misma altura para todas las gráficas
                  margin=dict(l=10, r=10, t=40, b=10),
