@@ -238,59 +238,22 @@ def graficar_puntaje_total(df):
     # --- Fin Gráfico: Puntaje Total ---
 
 
-def graficar_asesores_metricas_heatmap(df):
-    if df is None or df.empty or 'asesor' not in df.columns:
-        st.warning("⚠️ Datos incompletos o faltan columnas necesarias ('asesor') para la gráfica heatmap.")
-        return
-    metric_cols = [col for col in df.columns if '%' in col]
-    if not metric_cols:
-        st.warning("⚠️ No se encontraron columnas con '%' en el DataFrame para graficar el heatmap.")
-        st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
-        return
-    df['asesor'] = df['asesor'].apply(corregir_nombre)       
-    df_heatmap_data = df[['asesor'] + metric_cols].copy()
-    df_heatmap_data = df_heatmap_data.set_index('asesor')
-    df_heatmap_data = df_heatmap_data.apply(pd.to_numeric, errors='coerce').fillna(0)
-    if df_heatmap_data.empty:
-        st.warning("⚠️ Después de limpiar, el DataFrame para el heatmap está vacío.")
-        return
-    fig = go.Figure(data=go.Heatmap(
-        z=df_heatmap_data.values, x=df_heatmap_data.columns, y=df_heatmap_data.index,
-        colorscale='Greens',
-        colorbar=dict(title=dict(text="Valor (%)", font=dict(size=24)), tickfont=dict(size=24)), # Corregido sintaxis, mantiene tamaño original
-        hovertemplate='Asesor: %{y}<br>Métrica: %{x}<br>Valor: %{z:.2f}%<extra></extra>'
-    ))
-    fig.update_layout(
-        title="Heatmap: Asesor vs. Métricas con Porcentaje (%)",
-        xaxis_title="Métrica (%)", yaxis_title="Asesor",
-        font=dict(family="Arial", size=12), # Tamaño de fuente original del código proporcionado
-        height=700, # Misma altura para todas las gráficas
-        title_x=0.5, plot_bgcolor='white'
-    )
-    # --- Inicia Gráfico: Heatmap Métricas ---
-    st.plotly_chart(fig, use_container_width=True)
-    # --- Fin Gráfico: Heatmap Métricas ---
-
-
 def graficar_polaridad_subjetividad_gauges(df):
     if df is None or df.empty:
         st.warning("⚠️ El DataFrame de Sentimientos está vacío o no fue cargado correctamente para los gauges.")
         return
-
     if 'polarity' not in df.columns:
         st.error("❌ El DataFrame de Sentimientos no contiene la columna 'polarity' necesaria para el gauge de polaridad.")
         st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
         has_polarity = False
     else:
         has_polarity = True
-
     if 'subjectivity' not in df.columns:
         st.warning("⚠️ El DataFrame de Sentimientos no contiene la columna 'subjectivity'. El gauge de subjetividad no se mostrará.")
         st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
         has_subjectivity = False
     else:
         has_subjectivity = True
-
     if not has_polarity and not has_subjectivity:
         st.error("❌ No hay columnas válidas ('polarity', 'subjectivity') en el DataFrame de Sentimientos para generar ningún gauge.")
         return
@@ -299,7 +262,7 @@ def graficar_polaridad_subjetividad_gauges(df):
         df['asesor'] = df['asesor'].apply(corregir_nombre)   
         df['polarity'] = pd.to_numeric(df['polarity'], errors='coerce')
         polaridad_total = df['polarity'].mean()
-        if pd.isna(polaridad_total):
+        if pd.isna(polaridad_total): 
             polaridad_total = 0
     else:
         polaridad_total = 0
@@ -308,14 +271,14 @@ def graficar_polaridad_subjetividad_gauges(df):
         df['asesor'] = df['asesor'].apply(corregir_nombre)   
         df['subjectivity'] = pd.to_numeric(df['subjectivity'], errors='coerce')
         subjetividad_total = df['subjectivity'].mean()
-        if pd.isna(subjetividad_total):
+        if pd.isna(subjetividad_total): 
             subjetividad_total = 0.5
     else:
         subjetividad_total = 0.5
 
     col1, col2 = st.columns(2)
 
-    # --- Gauge de Polaridad ---
+    # --- Gráfico Gauge Polaridad ---
     if has_polarity:
         with col1:
             fig_polaridad = go.Figure(go.Indicator(
@@ -351,12 +314,19 @@ def graficar_polaridad_subjetividad_gauges(df):
         with col1:
             st.info("Gauge de Polaridad no disponible.")
 
-    # --- Gauge de Subjetividad ---
+    # --- Gráfico Gauge Subjetividad ---
     if has_subjectivity:
         with col2:
             fig_subjetividad = go.Figure(go.Indicator(
-                mode="gauge+number",
+                mode="gauge+number+delta",
                 value=subjetividad_total,
+                delta={
+                    'reference': 0.5,
+                    'increasing': {'color': 'green', 'symbol': '▲'},
+                    'decreasing': {'color': 'red', 'symbol': '▼'},
+                    'position': "bottom",
+                    'font': {'size': 28}
+                },
                 gauge=dict(
                     axis=dict(range=[0, 1]),
                     bar={'color': 'darkblue'},
@@ -380,14 +350,6 @@ def graficar_polaridad_subjetividad_gauges(df):
         with col2:
             st.info("Gauge de Subjetividad no disponible.")
 
-
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-
-import pandas as pd
-import plotly.express as px
-import streamlit as st # Asumo que estás usando Streamlit
 
 # Función ficticia para corregir nombre, reemplazar con tu implementación real
 def corregir_nombre(nombre):
