@@ -276,107 +276,109 @@ def graficar_polaridad_subjetividad_gauges(df):
     if df is None or df.empty:
         st.warning("⚠️ El DataFrame de Sentimientos está vacío o no fue cargado correctamente para los gauges.")
         return
+
     if 'polarity' not in df.columns:
-         st.error("❌ El DataFrame de Sentimientos no contiene la columna 'polarity' necesaria para el gauge de polaridad.")
-         st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
-         has_polarity = False
+        st.error("❌ El DataFrame de Sentimientos no contiene la columna 'polarity' necesaria para el gauge de polaridad.")
+        st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
+        has_polarity = False
     else:
-         has_polarity = True
+        has_polarity = True
+
     if 'subjectivity' not in df.columns:
         st.warning("⚠️ El DataFrame de Sentimientos no contiene la columna 'subjectivity'. El gauge de subjetividad no se mostrará.")
         st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
         has_subjectivity = False
     else:
-         has_subjectivity = True
+        has_subjectivity = True
+
     if not has_polarity and not has_subjectivity:
-         st.error("❌ No hay columnas válidas ('polarity', 'subjectivity') en el DataFrame de Sentimientos para generar ningún gauge.")
-         return
+        st.error("❌ No hay columnas válidas ('polarity', 'subjectivity') en el DataFrame de Sentimientos para generar ningún gauge.")
+        return
 
     if has_polarity:
         df['asesor'] = df['asesor'].apply(corregir_nombre)   
         df['polarity'] = pd.to_numeric(df['polarity'], errors='coerce')
         polaridad_total = df['polarity'].mean()
-        if pd.isna(polaridad_total): polaridad_total = 0
-    else: polaridad_total = 0
+        if pd.isna(polaridad_total):
+            polaridad_total = 0
+    else:
+        polaridad_total = 0
 
     if has_subjectivity:
         df['asesor'] = df['asesor'].apply(corregir_nombre)   
         df['subjectivity'] = pd.to_numeric(df['subjectivity'], errors='coerce')
         subjetividad_total = df['subjectivity'].mean()
-        if pd.isna(subjetividad_total): subjetividad_total = 0.5
-    else: subjetividad_total = 0.5
+        if pd.isna(subjetividad_total):
+            subjetividad_total = 0.5
+    else:
+        subjetividad_total = 0.5
 
     col1, col2 = st.columns(2)
 
-    # --- Inicia Gráfico: Gauges Sentimiento General ---
+    # --- Gauge de Polaridad ---
     if has_polarity:
         with col1:
-            df['asesor'] = df['asesor'].apply(corregir_nombre)   
             fig_polaridad = go.Figure(go.Indicator(
                 mode="gauge+number+delta",
                 value=polaridad_total,
                 delta={
-                'reference': 0,
-                'increasing': {'color': 'green', 'symbol': '▲'},
-                'decreasing': {'color': 'red', 'symbol': '▼'},
-                'position': "bottom",
-                'font': {'size': 28}  # Tamaño grande para el delta
+                    'reference': 0,
+                    'increasing': {'color': 'green', 'symbol': '▲'},
+                    'decreasing': {'color': 'red', 'symbol': '▼'},
+                    'position': "bottom",
+                    'font': {'size': 28}
                 },
                 gauge=dict(
-                    axis=dict(range=[-1, 1]), # Configuración original de axis
-                    bar=dict(color='darkgreen'), # Color original de la barra
+                    axis=dict(range=[-1, 1]),
+                    bar=dict(color='darkgreen'),
                     steps=[
-                        # PASOS Y COLORES ESPECIFICADOS POR TI AHORA para Polaridad
                         {'range': [-1, -0.3], 'color': '#c7e9c0'},
                         {'range': [-0.3, 0.3], 'color': '#a1d99b'},
                         {'range': [0.3, 1], 'color': '#31a354'}
                     ],
-                    threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75,'value': 0 }
+                    threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 0}
                 ),
-                title={'text': "Polaridad Promedio General", 'font': {'size': 18}}, # Tamaño de fuente original
-                number={'font': {'size': 24}} # Tamaño de fuente original
+                title={'text': "Polaridad Promedio General", 'font': {'size': 18}},
+                number={'font': {'size': 24}}
             ))
             fig_polaridad.update_layout(
-                 height=700, # Misma altura para todas las gráficas
-                 margin=dict(l=10, r=10, t=40, b=10),
-                 font=dict(family="Arial", size=12) # Tamaño de fuente base original
+                height=700,
+                margin=dict(l=10, r=10, t=40, b=10),
+                font=dict(family="Arial", size=12)
             )
             st.plotly_chart(fig_polaridad, use_container_width=True)
     else:
-         with col1: st.info("Gauge de Polaridad no disponible.")
+        with col1:
+            st.info("Gauge de Polaridad no disponible.")
 
+    # --- Gauge de Subjetividad ---
     if has_subjectivity:
         with col2:
             fig_subjetividad = go.Figure(go.Indicator(
-                mode="gauge+number", value=subjetividad_total,
+                mode="gauge+number",
+                value=subjetividad_total,
                 gauge=dict(
-                    # --- CORRECCIÓN DE SINTAXIS AQUÍ (axis definition) ---
-                    axis=dict(range=[0, 1]), # Corregido sintaxis, configuración original
-                    # --- FIN CORRECCIÓN ---
-                    bar={'color': 'darkblue'}, # Color original de la barra de subjetividad
+                    axis=dict(range=[0, 1]),
+                    bar={'color': 'darkblue'},
                     steps=[
-                         # Pasos y colores originales del gauge de subjetividad (del código que me diste antes de la confusión de colores)
-                         {'range': [0.0, 0.3], 'color': '#e5f5e0'},
-                         {'range': [0.3, 0.7], 'color': '#a1d99b'},
-                         {'range': [0.7, 1.0], 'color': '#31a354'}
+                        {'range': [0.0, 0.3], 'color': '#e5f5e0'},
+                        {'range': [0.3, 0.7], 'color': '#a1d99b'},
+                        {'range': [0.7, 1.0], 'color': '#31a354'}
                     ],
-                    threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75,'value': 0.5}
+                    threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 0.5}
                 ),
-                title={'text': "Subjetividad Promedio General", 'font': {'size': 18}}, # Tamaño de fuente original
-                number={'font': {'size': 24}} # Tamaño de fuente original
+                title={'text': "Subjetividad Promedio General", 'font': {'size': 18}},
+                number={'font': {'size': 24}}
             ))
-                title={'text': "Subjetividad Promedio General", 'font': {'size': 18}}, # Tamaño de fuente original
-                number={'font': {'size': 24}} # Tamaño de fuente original
-            ),
             fig_subjetividad.update_layout(
-                 height=700, # Misma altura para todas las gráficas
-                 margin=dict(l=10, r=10, t=40, b=10),
-                 font=dict(family="Arial", size=12) # Tamaño de fuente base original
+                height=700,
+                margin=dict(l=10, r=10, t=40, b=10),
+                font=dict(family="Arial", size=12)
             )
             st.plotly_chart(fig_subjetividad, use_container_width=True)
     else:
-         with col2: st.info("Gauge de Subjetividad no disponible.")
-    # --- Fin Gráfico: Gauges Sentimiento General ---
+        with col2:
+            st.info("Gauge de Subjetividad no disponible.")
 
 
 import streamlit as st
