@@ -351,16 +351,16 @@ def graficar_polaridad_subjetividad_gauges(df):
                 mode="gauge+number", value=subjetividad_total,
                 gauge=dict(
                     # --- CORRECCIÓN DE SINTAXIS AQUÍ (axis definition) ---
-                    axis=dict(range=[1, 1]), # Corregido sintaxis, configuración original
-                    # --- FIN CORRECCIÓN ---
-                    bar={'color': 'darkblue'}, # Color original de la barra de subjetividad
+                    axis=dict(range=[-1, 1]), # Configuración original de axis
+                    bar=dict(color='darkgreen'), # Color original de la barra
                     steps=[
-                         # Pasos y colores originales del gauge de subjetividad (del código que me diste antes de la confusión de colores)
-                         {'range': [0.0, 0.3], 'color': '#e5f5e0'},
-                         {'range': [0.3, 0.7], 'color': '#a1d99b'},
-                         {'range': [0.7, 1.0], 'color': '#31a354'}
+                        # PASOS Y COLORES ESPECIFICADOS POR TI AHORA para Polaridad
+                        {'range': [-1, -0.3], 'color': '#c7e9c0'},
+                        {'range': [-0.3, 0.3], 'color': '#a1d99b'},
+                        {'range': [0.3, 1], 'color': '#31a354'}
                     ],
-                    threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75,'value': 0.5}
+                    threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75,'value': 0 }
+                ),
                 ),
                 title={'text': "Subjetividad Promedio General", 'font': {'size': 18}}, # Tamaño de fuente original
                 number={'font': {'size': 24}} # Tamaño de fuente original
