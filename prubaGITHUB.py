@@ -372,6 +372,15 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+import pandas as pd
+import plotly.express as px
+import streamlit as st # Asumo que estás usando Streamlit
+
+# Función ficticia para corregir nombre, reemplazar con tu implementación real
+def corregir_nombre(nombre):
+    # Ejemplo simple: quitar espacios extra
+    return nombre.strip()
+
 def graficar_polaridad_por_asesor_barras_horizontales(df):
     if df is None or df.empty:
         st.warning("⚠️ El DataFrame para la gráfica de Polaridad está vacío o no fue cargado correctamente.")
@@ -382,7 +391,8 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         return
 
     # Corregir nombres de asesores y convertir a numérico
-    df['asesor'] = df['asesor'].apply(corregir_nombre)
+    # Asegúrate de que corregir_nombre esté definida en tu código
+    df['asesor'] = df['asesor'].astype(str).apply(corregir_nombre)
     df['polarity'] = pd.to_numeric(df['polarity'], errors='coerce')
     df_cleaned = df.dropna(subset=['asesor', 'polarity'])
 
@@ -392,7 +402,11 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
 
     # Agrupar por asesor y calcular promedio de polaridad
     df_polaridad_avg = df_cleaned.groupby('asesor', as_index=False)['polarity'].mean()
+    # Aunque la función se llama "horizontales", el código actual crea barras verticales (x=asesor, y=polarity).
+    # Si realmente quieres barras horizontales, intercambia x e y en px.bar.
+    # Para mantener la salida actual (barras verticales) y solo cambiar el formato del texto:
     df_polaridad_avg = df_polaridad_avg.sort_values('polarity', ascending=True)
+
 
     # Crear gráfico de barras verticales
     fig = px.bar(
@@ -402,12 +416,14 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         title='Polaridad Promedio por Asesor',
         labels={'polarity': 'Polaridad Promedio', 'asesor': 'Asesor'},
         color_discrete_sequence=['green'],
-         text='polarity'  # Mostrar etiquetas sobre las barras
+        # Mantienes text='polarity' para que Plotly sepa qué columna usar para el texto,
+        # pero el formato se controla con update_traces.
+        text='polarity'
     )
 
     # Ajustes de layout
     fig.update_layout(
-        yaxis_range=[-1, 1],
+        yaxis_range=[-1, 1], # Rango típico para polaridad si va de -1 a 1
         xaxis_title="Asesor",
         yaxis_title="Polaridad Promedio",
         plot_bgcolor="White",
@@ -416,7 +432,60 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         title_x=0.5
     )
 
+    # === MODIFICACIÓN CLAVE: Formatear el texto de las etiquetas ===
+    # Usamos update_traces para aplicar un template de texto a todas las barras.
+    # %{y:.3f} significa: usa el valor del eje Y y formatéalo como un número flotante con 3 decimales.
+    fig.update_traces(texttemplate='%{y:.3f}', textposition='outside') # 'outside' coloca el texto fuera de la barra
+
     st.plotly_chart(fig, use_container_width=True)
+
+# ========================================
+# === ANALISIS DETALLADO POR ASESOR (ACORDEONES) ===
+# ========================================
+# (El resto de tu código para los acordeones no necesita modificación para esto)
+def mostrar_acordeones(df):
+    # Validamos que el DataFrame no esté vacío ni sea None
+    if df is None or df.empty:
+        st.warning("⚠️ El DataFrame está vacío o no fue cargado correctamente.")
+        return
+
+    # Obtenemos la lista única de asesores presentes en la columna 'asesor'
+    asesores = df['asesor'].unique()
+
+    # Iteramos por cada asesor
+    for asesor in asesores:
+        # Filtramos las filas del DataFrame que pertenecen al asesor actual
+        df_asesor = df[df['asesor'] == asesor]
+
+        # OMITIMOS LA VISUALIZACIÓN CON EXPANDER PARA QUE NO SE MUESTRE
+        # En vez de usar st.expander, simplemente no mostramos nada
+
+        # Esta parte del código queda funcional pero oculta
+        for i, fila in df_asesor.iterrows():
+            #st.markdown("---")  # Línea divisoria entre llamadas
+
+            # Iteramos por cada columna del DataFrame (excepto 'asesor')
+            for columna in df.columns:
+                if columna == 'asesor':
+                    continue  # Saltamos la columna 'asesor'
+
+                # Obtenemos el valor de esta columna para la fila actual
+                valor = fila[columna]
+                try:
+                    # Intentamos convertir el valor a entero
+                    valor_int = int(valor)
+
+                    # Verificamos si cumple con el mínimo (al menos 1)
+                    estado = "✅" if valor_int >= 1 else "❌"
+
+                    # Mostramos la categoría, el valor y el estado
+                    # Esta línea es la que normalmente mostraría contenido
+                    # st.markdown(f"🔹 {columna}: {valor_int} {estado} (mínimo 1)")
+                except:
+                    # Si el valor no es numérico, lo mostramos tal cual
+                    # st.markdown(f"🔹 {columna}: {valor}")
+                    pass
+
 # ========================================
 # === ANALISIS DETALLADO POR ASESOR (ACORDEONES) ===
 # ========================================
