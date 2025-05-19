@@ -401,7 +401,7 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         y='polarity',
         title='Polaridad Promedio por Asesor',
         labels={'polarity': 'Polaridad Promedio', 'asesor': 'Asesor'},
-        color_discrete_sequence=['green']
+        color_discrete_sequence=['green'],
          text='polarity'  # Mostrar etiquetas sobre las barras
     )
 
