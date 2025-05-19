@@ -313,7 +313,15 @@ def graficar_polaridad_subjetividad_gauges(df):
         with col1:
             df['asesor'] = df['asesor'].apply(corregir_nombre)   
             fig_polaridad = go.Figure(go.Indicator(
-                mode="gauge+number", value=polaridad_total,
+                mode="gauge+number+delta",
+                value=polaridad_total,
+                delta={
+                'reference': 0,
+                'increasing': {'color': 'green', 'symbol': '▲'},
+                'decreasing': {'color': 'red', 'symbol': '▼'},
+                'position': "bottom",
+                'font': {'size': 28}  # Tamaño grande para el delta
+                },
                 gauge=dict(
                     axis=dict(range=[-1, 1]), # Configuración original de axis
                     bar=dict(color='darkgreen'), # Color original de la barra
