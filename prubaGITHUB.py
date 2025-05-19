@@ -420,67 +420,30 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
 # === ANALISIS DETALLADO POR ASESOR (ACORDEONES) ===
 # ========================================
 def mostrar_acordeones(df):
-    import streamlit as st
-    import pandas as pd
     if df is None or df.empty:
-        st.warning("⚠️ El DataFrame para los acordeones está vacío o no fue cargado correctamente.")
-        return
-    if 'asesor' not in df.columns:
-        st.error("❌ El DataFrame para los acordeones no contiene la columna esencial: 'asesor'.")
-        st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
+        st.warning("⚠️ El DataFrame está vacío o no fue cargado correctamente.")
         return
 
-    # --- Inicia sección Detalle Completo por Asesor (Letra Más Grande) ---
-    st.markdown("<h3 style='text-align: center;'>🔍 Detalle Completo por Asesor</h3>", unsafe_allow_html=True)
-    # --- Fin sección Detalle Completo por Asesor ---
+    # Agrupamos por asesor
+    asesores = df['asesor'].unique()
 
-    for index, fila in df.iterrows():
-        nombre_asesor = fila.get('asesor', f"Asesor Desconocido {index}")
-        with st.expander(f"🧑 Detalle de: **{nombre_asesor}**"):
-            columnas_a_mostrar = [col for col in df.columns if col != 'asesor']
-            if not columnas_a_mostrar:
-                st.info(f"ℹ️ No hay columnas para mostrar en el detalle de {nombre_asesor}.")
-                continue
-            for col_name in columnas_a_mostrar:
-                value = fila[col_name]
-                if pd.isna(value): display_value = "N/A"
-                elif isinstance(value, (int, float)):
+    for asesor in asesores:
+        df_asesor = df[df['asesor'] == asesor]
+
+        with st.expander(f"👤 Asesor: {asesor}", expanded=False):
+            for i, fila in df_asesor.iterrows():
+                st.markdown("---")
+                for columna in df.columns:
+                    if columna == 'asesor':
+                        continue
+                    valor = fila[columna]
                     try:
-                        # Mantener el formato de visualización del código original
-                        display_value = f"{value:.1f}" # Formato original
-
-                        # Ajustes según nombre de columna (basado en el código original)
-                        if '%' in col_name or '_porcentaje' in col_name.lower():
-                             display_value += "%"
-                        elif 'puntaje' in col_name.lower():
-                             display_value = f"{value:.1f}" # Puntaje original con .1f
-                        elif value == int(value):
-                            display_value = str(int(value)) # Enteros sin decimales
-                        # Note: El código original para polaridad/sentimiento/subjetividad usaba .3f
-                        elif 'polaridad' in col_name.lower() or 'sentimiento' in col_name.lower() or 'subjetividad' in col_name.lower():
-                             display_value = f"{value:.3f}" # Sentimiento/Polaridad con 3 decimales
-                        else: # Si no coincide con las reglas anteriores, usar .1f
-                            display_value = f"{value:.1f}"
-
-
-                    except ValueError: display_value = str(value)
-                else: display_value = str(value)
-
-                emoji = "🔹"
-                if 'saludo' in col_name.lower(): emoji = "👋"
-                elif 'presentacion' in col_name.lower(): emoji = "🏢"
-                elif 'politica' in col_name.lower(): emoji = "🔊"
-                elif 'valor' in col_name.lower(): emoji = "💡"
-                elif 'costos' in col_name.lower(): emoji = "💰"
-                elif 'cierre' in col_name.lower(): emoji = "✅"
-                elif 'normativo' in col_name.lower(): emoji = "📜"
-                elif 'puntaje' in col_name.lower(): emoji = "⭐"
-                elif 'sentimiento' in col_name.lower() or 'polaridad' in col_name.lower() or 'subjetividad' in col_name.lower(): emoji = "😊"
-                elif 'total_llamadas' in col_name.lower(): emoji = "📞"
-                elif 'archivo' in col_name.lower(): emoji = "📄"
-
-                st.markdown(f"{emoji} **{col_name.replace('_', ' ').capitalize()}:** {display_value}")
-
+                        valor_int = int(valor)
+                        estado = "✅" if valor_int >= 1 else "❌"
+                        st.markdown(f"🔹 {columna}: {valor_int} {estado} (mínimo 1)")
+                    except:
+                        # Si no se puede convertir a int, lo mostramos tal cual
+                        st.markdown(f"🔹 {columna}: {valor}")
 #000000000000000000000000000000000000000
 #0000000 acordeon Yesid
 ##################################
@@ -538,6 +501,7 @@ def mostrar_acordeones_simple(df):
 
                 if len(df_asesor) > 1 and index < len(df_asesor) - 1:
                     st.markdown("---")
+                    #############nuevo acordeon 
 
 # ========================================
 # === FUNCIÓN PRINCIPAL STREAMLIT =======
