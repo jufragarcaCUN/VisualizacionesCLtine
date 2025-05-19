@@ -228,7 +228,7 @@ def graficar_puntaje_total(df):
     )
     fig.update_traces(texttemplate='%{text:.1f}', textposition='outside')
     fig.update_layout(
-        height=1700, # Misma altura para todas las gráficas
+        height=1000, # Misma altura para todas las gráficas
         xaxis_tickangle=-45, plot_bgcolor="white",
         font=dict(family="Arial", size=12), # Tamaño de fuente original del código proporcionado
         title_x=0.5
