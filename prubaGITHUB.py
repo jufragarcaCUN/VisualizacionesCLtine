@@ -236,7 +236,38 @@ def graficar_puntaje_total(df):
     # --- Inicia Gráfico: Puntaje Total ---
     st.plotly_chart(fig, use_container_width=True)
     # --- Fin Gráfico: Puntaje Total ---
-
+def graficar_asesores_metricas_heatmap(df):
+    if df is None or df.empty or 'asesor' not in df.columns:
+        st.warning("⚠️ Datos incompletos o faltan columnas necesarias ('asesor') para la gráfica heatmap.")
+        return
+    metric_cols = [col for col in df.columns if '%' in col]
+    if not metric_cols:
+        st.warning("⚠️ No se encontraron columnas con '%' en el DataFrame para graficar el heatmap.")
+        st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
+        return
+    df['asesor'] = df['asesor'].apply(corregir_nombre)       
+    df_heatmap_data = df[['asesor'] + metric_cols].copy()
+    df_heatmap_data = df_heatmap_data.set_index('asesor')
+    df_heatmap_data = df_heatmap_data.apply(pd.to_numeric, errors='coerce').fillna(0)
+    if df_heatmap_data.empty:
+        st.warning("⚠️ Después de limpiar, el DataFrame para el heatmap está vacío.")
+        return
+    fig = go.Figure(data=go.Heatmap(
+        z=df_heatmap_data.values, x=df_heatmap_data.columns, y=df_heatmap_data.index,
+        colorscale='Greens',
+        colorbar=dict(title=dict(text="Valor (%)", font=dict(size=24)), tickfont=dict(size=24)), # Corregido sintaxis, mantiene tamaño original
+        hovertemplate='Asesor: %{y}<br>Métrica: %{x}<br>Valor: %{z:.2f}%<extra></extra>'
+    ))
+    fig.update_layout(
+        title="Heatmap: Asesor vs. Métricas con Porcentaje (%)",
+        xaxis_title="Métrica (%)", yaxis_title="Asesor",
+        font=dict(family="Arial", size=12), # Tamaño de fuente original del código proporcionado
+        height=700, # Misma altura para todas las gráficas
+        title_x=0.5, plot_bgcolor='white'
+    )
+    # --- Inicia Gráfico: Heatmap Métricas ---
+    st.plotly_chart(fig, use_container_width=True)
+    # --- Fin Gráfico: Heatmap Métricas ---
 
 def graficar_polaridad_subjetividad_gauges(df):
     if df is None or df.empty:
