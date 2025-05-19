@@ -15,27 +15,61 @@ from textblob import TextBlob
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-
 import matplotlib.pyplot as plt
-import streamlit as st
-
-
-
+from tabulate import tabulate
 
 # ========================================
 # === CONFIGURACIÓN DE STREAMLIT PAGE ===
 # ========================================
 st.set_page_config(layout="wide")
 
+# ========================================
+# === FUNCIONES DE SOPORTE ==============
+# ========================================
 
-from pathlib import Path
-import pandas as pd
-import streamlit as st
-from tabulate import tabulate
+def corregir_nombre(nombre):
+    correcciones = {
+        "DanielaLancheros": "Daniela Lancheros",
+        "EdwinMiranda": "Edwin Miranda",
+        "LuisaReyes": "Luisa Reyes",
+        "MayerlyAcero": "Mayerly Acero",
+        "NancyMoreno": "Nancy Moreno",
+        "NicolasTovar": "Nicolas Tovar",
+        "johan": "Johan",
+        "NoseEntiendelenombredelasesor": "Desconocido",
+        "NoSeEscucha": "Desconocido",
+        "NotieneNombre": "Desconocido"
+    }
+    nombre_str = str(nombre).strip() if pd.notna(nombre) else ''
+    return correcciones.get(nombre_str, nombre_str)
 
-# ================================
-# RUTAS RELATIVAS
-# ================================
+def get_image_base64(image_path):
+    try:
+        with open(image_path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except Exception:
+        return None
+
+def insetCodigo():
+    col1, col2 = st.columns(2)
+    img_height = "150px"
+    img_style = f"height: {img_height}; object-fit: contain; margin: auto; display: block;"
+    with col1:
+        img1_base64 = get_image_base64(logoCun)
+        if img1_base64:
+            st.markdown(f'<img src="data:image/png;base64,{img1_base64}" style="{img_style}"/>', unsafe_allow_html=True)
+        else:
+            st.warning(f"⚠️ Logo CUN no encontrado en: {logoCun}")
+    with col2:
+        img2_base64 = get_image_base64(logoCltiene)
+        if img2_base64:
+            st.markdown(f'<img src="data:image/png;base64,{img2_base64}" style="{img_style}"/>', unsafe_allow_html=True)
+        else:
+            st.warning(f"⚠️ Logo Cltiene no encontrado en: {logoCltiene}")
+
+# ========================================
+# === RUTAS RELATIVAS ====================
+# ========================================
 carpeta_base = Path(".")
 logoCun = carpeta_base / "CUN-1200X1200.png"
 logoCltiene = carpeta_base / "clTiene2.jpeg"
@@ -48,10 +82,9 @@ ruta_archivo_reporte_acordeon = carpeta_base / nombre_archivo_reporte_acordeon
 puntejeAcordeoneros = carpeta_base / nombre_archivo_resultado_llamada_directo
 resumen_llamadita = carpeta_base / "resumen_llamadas.xlsx"
 
-# ================================
-# CARGA DE DATAFRAMES
-# ================================
-
+# ========================================
+# === CARGA DE DATAFRAMES ===============
+# ========================================
 try:
     df_puntajeAsesores = pd.read_excel(ruta_archivo_reporte_puntaje)
     if 'asesor' in df_puntajeAsesores.columns:
@@ -87,7 +120,7 @@ try:
     if 'asesor' in df_acordeon.columns:
         df_acordeon['asesor'] = df_acordeon['asesor'].apply(corregir_nombre)
 except FileNotFoundError:
-    st.error(f"❌ No se encontró el archivo de Acordeon: {puntejeAcordeoneros}. Asegúrate de que el merge se haya ejecutado y guardado correctamente.")
+    st.error(f"❌ No se encontró el archivo de Acordeon: {puntejeAcordeoneros}.")
     df_acordeon = pd.DataFrame()
 except Exception as e:
     st.error(f"❌ Error al cargar acordeon desde '{puntejeAcordeoneros}': {e}")
@@ -123,9 +156,6 @@ except FileNotFoundError:
 except Exception as e:
     st.error(f"Error cargando {nombre_archivo_reporte_acordeon}: {e}")
     acordeonYesid = pd.DataFrame()
-
-
-
 
 
 
