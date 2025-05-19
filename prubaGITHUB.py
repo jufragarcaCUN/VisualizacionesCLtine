@@ -438,7 +438,7 @@ def mostrar_acordeones(df):
 
         # Esta parte del código queda funcional pero oculta
         for i, fila in df_asesor.iterrows():
-            st.markdown("---")  # Línea divisoria entre llamadas
+            #st.markdown("---")  # Línea divisoria entre llamadas
 
             # Iteramos por cada columna del DataFrame (excepto 'asesor')
             for columna in df.columns:
