@@ -351,7 +351,7 @@ def graficar_polaridad_subjetividad_gauges(df):
                 mode="gauge+number", value=subjetividad_total,
                 gauge=dict(
                     # --- CORRECCIÓN DE SINTAXIS AQUÍ (axis definition) ---
-                    axis=dict(range=[0, 1]), # Corregido sintaxis, configuración original
+                    axis=dict(range=[1, 1]), # Corregido sintaxis, configuración original
                     # --- FIN CORRECCIÓN ---
                     bar={'color': 'darkblue'}, # Color original de la barra de subjetividad
                     steps=[
