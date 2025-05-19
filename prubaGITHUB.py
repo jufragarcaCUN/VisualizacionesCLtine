@@ -419,46 +419,49 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
 # ========================================
 # === ANALISIS DETALLADO POR ASESOR (ACORDEONES) ===
 # ========================================
-# def mostrar_acordeones(df):
-#     # Validamos que el DataFrame no esté vacío ni sea None
-#     if df is None or df.empty:
-#         st.warning("⚠️ El DataFrame está vacío o no fue cargado correctamente.")
-#         return
+def mostrar_acordeones(df):
+    # Validamos que el DataFrame no esté vacío ni sea None
+    if df is None or df.empty:
+        st.warning("⚠️ El DataFrame está vacío o no fue cargado correctamente.")
+        return
 
-#     # Obtenemos la lista única de asesores presentes en la columna 'asesor'
-#     asesores = df['asesor'].unique()
+    # Obtenemos la lista única de asesores presentes en la columna 'asesor'
+    asesores = df['asesor'].unique()
 
-#     # Iteramos por cada asesor
-#     for asesor in asesores:
-#         # Filtramos las filas del DataFrame que pertenecen al asesor actual
-#         df_asesor = df[df['asesor'] == asesor]
+    # Iteramos por cada asesor
+    for asesor in asesores:
+        # Filtramos las filas del DataFrame que pertenecen al asesor actual
+        df_asesor = df[df['asesor'] == asesor]
 
-#         # Creamos un acordeón (expander) para este asesor
-#         with st.expander(f"👤 Asesor: {asesor}", expanded=False):
-            
-#             # Iteramos por cada fila (cada llamada) del asesor
-#             for i, fila in df_asesor.iterrows():
-#                 st.markdown("---")  # Línea divisoria entre llamadas
+        # OMITIMOS LA VISUALIZACIÓN CON EXPANDER PARA QUE NO SE MUESTRE
+        # En vez de usar st.expander, simplemente no mostramos nada
 
-#                 # Iteramos por cada columna del DataFrame (excepto 'asesor')
-#                 for columna in df.columns:
-#                     if columna == 'asesor':
-#                         continue  # Saltamos la columna 'asesor'
+        # Esta parte del código queda funcional pero oculta
+        for i, fila in df_asesor.iterrows():
+            st.markdown("---")  # Línea divisoria entre llamadas
 
-#                     # Obtenemos el valor de esta columna para la fila actual
-#                     valor = fila[columna]
-#                     try:
-#                         # Intentamos convertir el valor a entero
-#                         valor_int = int(valor)
+            # Iteramos por cada columna del DataFrame (excepto 'asesor')
+            for columna in df.columns:
+                if columna == 'asesor':
+                    continue  # Saltamos la columna 'asesor'
 
-#                         # Verificamos si cumple con el mínimo (al menos 1)
-#                         estado = "✅" if valor_int >= 1 else "❌"
+                # Obtenemos el valor de esta columna para la fila actual
+                valor = fila[columna]
+                try:
+                    # Intentamos convertir el valor a entero
+                    valor_int = int(valor)
 
-#                         # Mostramos la categoría, el valor y el estado
-#                         st.markdown(f"🔹 {columna}: {valor_int} {estado} (mínimo 1)")
-#                     except:
-#                         # Si el valor no es numérico, lo mostramos tal cual
-#                         st.markdown(f"🔹 {columna}: {valor}")
+                    # Verificamos si cumple con el mínimo (al menos 1)
+                    estado = "✅" if valor_int >= 1 else "❌"
+
+                    # Mostramos la categoría, el valor y el estado
+                    # Esta línea es la que normalmente mostraría contenido
+                    # st.markdown(f"🔹 {columna}: {valor_int} {estado} (mínimo 1)")
+                except:
+                    # Si el valor no es numérico, lo mostramos tal cual
+                    # st.markdown(f"🔹 {columna}: {valor}")
+                    pass
+
 
 #000000000000000000000000000000000000000
 #0000000 acordeon Yesid
