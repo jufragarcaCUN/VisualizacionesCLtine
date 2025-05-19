@@ -409,7 +409,7 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         yaxis_range=[-1, 1],
         xaxis_title="Asesor",
         yaxis_title="Polaridad Promedio",
-        plot_bgcolor="black",
+        plot_bgcolor="White",
         height=700,
         font=dict(family="Arial", size=12),
         title_x=0.5
