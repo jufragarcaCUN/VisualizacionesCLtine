@@ -63,7 +63,6 @@ logoCltiene = carpeta_base / "clTiene2.jpeg"
 
 ruta_archivo_reporte_puntaje = carpeta_base / "reporte_llamadas_asesores.xlsx"
 ruta_archivo_sentimientos = carpeta_base / "sentimientos_textblob.xlsx"
-nombre_archivo_reporte_acordeon = "acordon1.xlsx" # This was not used for df_acordeon loading
 nombre_archivo_resultado_llamada_directo = "resultados_llamadas_directo.xlsx"
 puntejeAcordeoneros = carpeta_base / nombre_archivo_resultado_llamada_directo
 resumen_llamadita = carpeta_base / "resumen_llamadas.xlsx"
@@ -129,18 +128,6 @@ except FileNotFoundError:
 except Exception as e:
     print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}")
     resultados_llamadas_directo = pd.DataFrame()
-
-# The file `acordeonYesid` was not used in the main function or other parts,
-# so its loading has been commented out to avoid confusion/unnecessary operations.
-# try:
-#     acordeonYesid = pd.read_excel(carpeta_base / nombre_archivo_reporte_acordeon)
-#     st.success(f"Archivo {nombre_archivo_reporte_acordeon} cargado correctamente.")
-# except FileNotFoundError:
-#     st.error(f"No se encontró el archivo: {nombre_archivo_reporte_acordeon}")
-#     acordeonYesid = pd.DataFrame()
-# except Exception as e:
-#     st.error(f"Error cargando {nombre_archivo_reporte_acordeon}: {e}")
-#     acordeonYesid = pd.DataFrame()
 
 def graficar_puntaje_total(df):
     if df is None or df.empty or 'asesor' not in df.columns or 'puntaje_total' not in df.columns:
@@ -272,7 +259,7 @@ def graficar_polaridad_subjetividad_gauges(df):
                 margin=dict(l=10, r=10, t=40, b=10),
                 font=dict(family="Arial", size=12)
             )
-            st.plotly_chart(fig_polaridad, use_container_width=True, key="gauge_polarity")
+            st.plotly_chart(fig_polaridad, use_container_width=True, key="gauge_polarity") # Added unique key
     else:
         with col1:
             st.info("Gauge de Polaridad no disponible.")
@@ -307,7 +294,7 @@ def graficar_polaridad_subjetividad_gauges(df):
                 margin=dict(l=10, r=10, t=40, b=10),
                 font=dict(family="Arial", size=12)
             )
-            st.plotly_chart(fig_subjetividad, use_container_width=True, key="gauge_subjectivity")
+            st.plotly_chart(fig_subjetividad, use_container_width=True, key="gauge_subjectivity") # Added unique key
     else:
         with col2:
             st.info("Gauge de Subjetividad no disponible.")
