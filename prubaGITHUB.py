@@ -388,6 +388,28 @@ def graficar_polaridad_subjetividad_gauges(df):
     #return nombre.strip()
 
 def graficar_polaridad_por_asesor_barras_horizontales(df):
+    import unidecode
+
+    def corregir_nombre(nombre):
+        correcciones = {
+            "danielalancheros": "Daniela Lancheros",
+            "edwinmiranda": "Edwin Miranda",
+            "luisareyes": "Luisa Reyes",
+            "mayerlyacero": "Mayerly Acero",
+            "nancymoreno": "Nancy Moreno",
+            "nicolastovar": "Nicolas Tovar",
+            "johan": "Johan",
+            "noseentiendelenombredelasesor": "Desconocido",
+            "noseescucha": "Desconocido",
+            "notienenombre": "Desconocido"
+        }
+
+        if pd.isna(nombre):
+            return "Desconocido"
+
+        normalizado = unidecode.unidecode(str(nombre).strip().lower().replace(" ", ""))
+        return correcciones.get(normalizado, str(nombre).title().strip())
+
     if df is None or df.empty:
         st.warning("⚠️ El DataFrame para la gráfica de Polaridad está vacío o no fue cargado correctamente.")
         return
@@ -396,8 +418,6 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
         return
 
-    # Corregir nombres de asesores y convertir a numérico
-    # Asegúrate de que corregir_nombre esté definida en tu código
     df['asesor'] = df['asesor'].astype(str).apply(corregir_nombre)
     df['polarity'] = pd.to_numeric(df['polarity'], errors='coerce')
     df_cleaned = df.dropna(subset=['asesor', 'polarity'])
@@ -406,15 +426,9 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         st.warning("⚠️ No hay datos válidos para graficar.")
         return
 
-    # Agrupar por asesor y calcular promedio de polaridad
     df_polaridad_avg = df_cleaned.groupby('asesor', as_index=False)['polarity'].mean()
-    # Aunque la función se llama "horizontales", el código actual crea barras verticales (x=asesor, y=polarity).
-    # Si realmente quieres barras horizontales, intercambia x e y en px.bar.
-    # Para mantener la salida actual (barras verticales) y solo cambiar el formato del texto:
     df_polaridad_avg = df_polaridad_avg.sort_values('polarity', ascending=True)
 
-
-    # Crear gráfico de barras verticales
     fig = px.bar(
         df_polaridad_avg,
         x='asesor',
@@ -422,14 +436,11 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         title='Polaridad Promedio por Asesor',
         labels={'polarity': 'Polaridad Promedio', 'asesor': 'Asesor'},
         color_discrete_sequence=['green'],
-        # Mantienes text='polarity' para que Plotly sepa qué columna usar para el texto,
-        # pero el formato se controla con update_traces.
         text='polarity'
     )
 
-    # Ajustes de layout
     fig.update_layout(
-        yaxis_range=[-1, 1], # Rango típico para polaridad si va de -1 a 1
+        yaxis_range=[-1, 1],
         xaxis_title="Asesor",
         yaxis_title="Polaridad Promedio",
         plot_bgcolor="White",
@@ -438,6 +449,9 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         title_x=0.5
     )
 
+    fig.update_traces(texttemplate='%{y:.3f}', textposition='outside')
+
+    st.plotly_chart(fig, use_container_width=True)
     # === MODIFICACIÓN CLAVE: Formatear el texto de las etiquetas ===
     # Usamos update_traces para aplicar un template de texto a todas las barras.
     # %{y:.3f} significa: usa el valor del eje Y y formatéalo como un número flotante con 3 decimales.
