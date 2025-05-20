@@ -403,28 +403,25 @@ def mostrar_acordeones(df):
 
 ##############################
 
-def cargar_y_mostrar_columnas(df):
+def cargar_y_mostrar_columnas(df): # Correcto: la función recibe 'df'
     """
     Carga un DataFrame y muestra sus columnas.
     """
-    if dataframe is not None and not dataframe.empty:
+    if df is not None and not df.empty: # Correcto: usa 'df'
         st.write("Columnas del DataFrame:")
-        st.write(dataframe.columns.tolist())
+        st.write(df.columns.tolist()) # Correcto: usa 'df'
     else:
         st.warning("El DataFrame está vacío o no ha sido cargado.")
 
-# Asumiendo que df_POlaVssub ya está definido y cargado en tu script principal
-# (como en el código que me proporcionaste anteriormente)
-# Si no lo está, necesitarías cargarlo primero, por ejemplo:
-# df_POlaVssub = pd.read_excel("ruta/a/tu/sentimientos_textblob.xlsx")
 
-# Línea para llamar a la función
-cargar_y_mostrar_columnas(df_POlaVssub)
 ##############################
 
 def main():
     insetCodigo()
 
+    # Línea para llamar a la función
+    cargar_y_mostrar_columnas(df_POlaVssub)
+    
     st.markdown("---")
 
     st.header("📈 Gráficos Resumen")
