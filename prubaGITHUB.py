@@ -259,7 +259,7 @@ def graficar_polaridad_subjetividad_gauges(df):
                 margin=dict(l=10, r=10, t=40, b=10),
                 font=dict(family="Arial", size=12)
             )
-            st.plotly_chart(fig_polaridad, use_container_width=True, key="gauge_polarity") # Added unique key
+            st.plotly_chart(fig_polaridad, use_container_width=True, key="gauge_polarity")
     else:
         with col1:
             st.info("Gauge de Polaridad no disponible.")
@@ -294,7 +294,7 @@ def graficar_polaridad_subjetividad_gauges(df):
                 margin=dict(l=10, r=10, t=40, b=10),
                 font=dict(family="Arial", size=12)
             )
-            st.plotly_chart(fig_subjetividad, use_container_width=True, key="gauge_subjectivity") # Added unique key
+            st.plotly_chart(fig_subjetividad, use_container_width=True, key="gauge_subjectivity")
     else:
         with col2:
             st.info("Gauge de Subjetividad no disponible.")
@@ -399,14 +399,7 @@ def mostrar_acordeones(df):
                     st.write("🎯 Resultado: ? Resultado desconocido — Puntaje: N/A")
 
                 if len(df_asesor) > 1 and index < len(df_asesor) - 1:
-                    # This line was previously empty, now it's correctly indented
                     st.markdown("---")
-
-import streamlit as st
-import pandas as pd
-###############################
-import streamlit as st
-import pandas as pd
 
 def cargar_y_mostrar_columnas(df):
     if df is not None and not df.empty:
@@ -435,11 +428,11 @@ def cargar_y_mostrar_columnas(df):
             for col_name in all_columns[items_per_streamlit_col*3:items_per_streamlit_col*4]:
                 st.write(f"- {col_name}")
     else:
-        st.warning("El DataFrame está vacío o no ha sido cargado.")################################
+        st.warning("El DataFrame está vacío o no ha sido cargado.")
+
 def main():
     insetCodigo()
 
-    # Línea para llamar a la función
     cargar_y_mostrar_columnas(df_POlaVssub)
     
     st.markdown("---")
@@ -463,7 +456,6 @@ def main():
     st.markdown("---")
 
     mostrar_acordeones(df_acordeon)
-    # ##############solo mover esto################
     cargar_y_mostrar_columnas(df_POlaVssub)
 
 
