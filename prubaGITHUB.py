@@ -157,7 +157,122 @@ except Exception as e:
     st.error(f"Error cargando {nombre_archivo_reporte_acordeon}: {e}")
     acordeonYesid = pd.DataFrame()
 
+#======================
+##funcion nuevo Yesid 
+""""""""""""""""""""""
+def graficar_polaridad_subjetividad_gauges2(df):
+    if df is None or df.empty:
+        st.warning("⚠️ El DataFrame de Sentimientos está vacío o no fue cargado correctamente para los gauges.")
+        return
+    if 'polarity' not in df.columns:
+        st.error("❌ El DataFrame de Sentimientos no contiene la columna 'polarity' necesaria para el gauge de polaridad.")
+        st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
+        has_polarity = False
+    else:
+        has_polarity = True
+    if 'subjectivity' not in df.columns:
+        st.warning("⚠️ El DataFrame de Sentimientos no contiene la columna 'subjectivity'. El gauge de subjetividad no se mostrará.")
+        st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
+        has_subjectivity = False
+    else:
+        has_subjectivity = True
+    if not has_polarity and not has_subjectivity:
+        st.error("❌ No hay columnas válidas ('polarity', 'subjectivity') en el DataFrame de Sentimientos para generar ningún gauge.")
+        return
 
+    if has_polarity:
+        df['asesor'] = df['asesor'].apply(corregir_nombre)   
+        df['polarity'] = pd.to_numeric(df['polarity'], errors='coerce')
+        polaridad_total = df['polarity'].mean()
+        if pd.isna(polaridad_total): 
+            polaridad_total = 0
+    else:
+        polaridad_total = 0
+
+    if has_subjectivity:
+        df['asesor'] = df['asesor'].apply(corregir_nombre)   
+        df['subjectivity'] = pd.to_numeric(df['subjectivity'], errors='coerce')
+        subjetividad_total = df['subjectivity'].mean()
+        if pd.isna(subjetividad_total): 
+            subjetividad_total = 0.5
+    else:
+        subjetividad_total = 0.5
+
+    col1, col2 = st.columns(2)
+
+    # --- Gráfico Gauge Polaridad ---
+    if has_polarity:
+        with col1:
+            fig_polaridad = go.Figure(go.Indicator(
+                mode="gauge+number+delta",
+                value=polaridad_total,
+                delta={
+                    'reference': 0,
+                    'increasing': {'color': 'green', 'symbol': '▲'},
+                    'decreasing': {'color': 'red', 'symbol': '▼'},
+                    'position': "bottom",
+                    'font': {'size': 28}
+                },
+                gauge=dict(
+                    axis=dict(range=[-1, 1]),
+                    bar=dict(color='darkgreen'),
+                    steps=[
+                        {'range': [-1, -0.3], 'color': '#c7e9c0'},
+                        {'range': [-0.3, 0.3], 'color': '#a1d99b'},
+                        {'range': [0.3, 1], 'color': '#31a354'}
+                    ],
+                    threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 0}
+                ),
+                title={'text': "Polaridad Promedio General", 'font': {'size': 18}},
+                number={'font': {'size': 24}}
+            ))
+            fig_polaridad.update_layout(
+                height=700,
+                margin=dict(l=10, r=10, t=40, b=10),
+                font=dict(family="Arial", size=12)
+            )
+            st.plotly_chart(fig_polaridad, use_container_width=True)
+    else:
+        with col1:
+            st.info("Gauge de Polaridad no disponible.")
+
+    # --- Gráfico Gauge Subjetividad ---
+    if has_subjectivity:
+        with col2:
+            fig_subjetividad = go.Figure(go.Indicator(
+                mode="gauge+number+delta",
+                value=subjetividad_total,
+                delta={
+                    'reference': 0.5,
+                    'increasing': {'color': 'green', 'symbol': '▲'},
+                    'decreasing': {'color': 'red', 'symbol': '▼'},
+                    'position': "bottom",
+                    'font': {'size': 28}
+                },
+                gauge=dict(
+                    axis=dict(range=[0, 1]),
+                    bar={'color': 'darkblue'},
+                    steps=[
+                        {'range': [0.0, 0.3], 'color': '#e5f5e0'},
+                        {'range': [0.3, 0.7], 'color': '#a1d99b'},
+                        {'range': [0.7, 1.0], 'color': '#31a354'}
+                    ],
+                    threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 0.5}
+                ),
+                title={'text': "Subjetividad Promedio General", 'font': {'size': 18}},
+                number={'font': {'size': 24}}
+            ))
+            fig_subjetividad.update_layout(
+                height=700,
+                margin=dict(l=10, r=10, t=40, b=10),
+                font=dict(family="Arial", size=12)
+            )
+            st.plotly_chart(fig_subjetividad, use_container_width=True)
+    else:
+        with col2:
+            st.info("Gauge de Subjetividad no disponible.")
+
+###############################################################
 
 # ========================================
 # === FUNCIONES DE SOPORTE ==============
@@ -610,7 +725,9 @@ def mostrar_acordeones_simple(df):
 # === FUNCIÓN PRINCIPAL STREAMLIT =======
 # ========================================
 def main():
-
+       # --- Inicia Gráfico: Gauges Sentimiento General ---
+    graficar_polaridad_subjetividad_gauges2(df_POlaVssub)
+    # --- Fin Gráfico: Gauges Sentimiento General ---
     # --- Inicia Titulo de la Aplicación (Letra Más Grande) ---
     st.title("📊 Reporte de Llamadas y Sentimiento por Asesor")
     # --- Fin Titulo de la Aplicación ---
