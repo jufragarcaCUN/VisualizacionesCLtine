@@ -401,35 +401,35 @@ def mostrar_acordeones(df):
                 if len(df_asesor) > 1 and index < len(df_asesor) - 1:
                     st.markdown("---")
 
-def cargar_y_mostrar_columnas(df):
+def cargar_y_mostrar_promedios(df):
     if df is not None and not df.empty:
-        st.markdown("## 📋 Columnas del DataFrame")
+        st.markdown("## 📊 Promedio por Columna Numérica")
 
-        all_columns = df.columns.tolist()
-        num_columns = len(all_columns)
-        items_per_col = (num_columns + 3) // 4  # Divide en 4 columnas visuales
+        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+        num_columns = len(columnas_numericas)
+        items_per_col = (num_columns + 3) // 4  # Para distribuir en 4 columnas
 
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            st.markdown("### 📑 Col 1")
-            for col_name in all_columns[0:items_per_col]:
-                st.markdown(f"- `{col_name}`")
+            for col_name in columnas_numericas[0:items_per_col]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
 
         with col2:
-            st.markdown("### 📑 Col 2")
-            for col_name in all_columns[items_per_col:items_per_col*2]:
-                st.markdown(f"- `{col_name}`")
+            for col_name in columnas_numericas[items_per_col:items_per_col*2]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
 
         with col3:
-            st.markdown("### 📑 Col 3")
-            for col_name in all_columns[items_per_col*2:items_per_col*3]:
-                st.markdown(f"- `{col_name}`")
+            for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
 
         with col4:
-            st.markdown("### 📑 Col 4")
-            for col_name in all_columns[items_per_col*3:]:
-                st.markdown(f"- `{col_name}`")
+            for col_name in columnas_numericas[items_per_col*3:]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
     else:
         st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
 
