@@ -595,9 +595,7 @@ def main():
     st.markdown("---")
     # --- Fin separación ---
 
-    # --- Inicia Gráfico: Gauges Sentimiento General ---
-    graficar_polaridad_subjetividad_gauges(df_POlaVssub)
-    # --- Fin Gráfico: Gauges Sentimiento General ---
+ --
 
     # --- Separa un grafico ---
     st.markdown("---")
