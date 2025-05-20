@@ -403,7 +403,7 @@ def mostrar_acordeones(df):
 
 ##############################
 
-def cargar_y_mostrar_columnas(dataframe):
+def cargar_y_mostrar_columnas(df):
     """
     Carga un DataFrame y muestra sus columnas.
     """
