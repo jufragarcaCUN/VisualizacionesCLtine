@@ -388,8 +388,7 @@ def graficar_polaridad_subjetividad_gauges(df):
     #return nombre.strip()
 
 def graficar_polaridad_por_asesor_barras_horizontales(df):
-
-
+    # --- Función local corregir_nombre sin librerías externas ---
     def corregir_nombre(nombre):
         correcciones = {
             "danielalancheros": "Daniela Lancheros",
@@ -404,11 +403,13 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
             "notienenombre": "Desconocido"
         }
 
-        if pd.isna(nombre):
+        if not nombre:
             return "Desconocido"
 
-        normalizado = unidecode.unidecode(str(nombre).strip().lower().replace(" ", ""))
-        return correcciones.get(normalizado, str(nombre).title().strip())
+        # Normalización manual mínima: minúsculas + sin espacios
+        nombre_str = str(nombre).strip().lower().replace(" ", "")
+        return correcciones.get(nombre_str, str(nombre).title().strip())
+    # ------------------------------------------------------------
 
     if df is None or df.empty:
         st.warning("⚠️ El DataFrame para la gráfica de Polaridad está vacío o no fue cargado correctamente.")
@@ -429,6 +430,7 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
     df_polaridad_avg = df_cleaned.groupby('asesor', as_index=False)['polarity'].mean()
     df_polaridad_avg = df_polaridad_avg.sort_values('polarity', ascending=True)
 
+    # Gráfico de barras verticales (puedo ajustarlo a horizontal si quieres)
     fig = px.bar(
         df_polaridad_avg,
         x='asesor',
@@ -450,15 +452,7 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
     )
 
     fig.update_traces(texttemplate='%{y:.3f}', textposition='outside')
-
     st.plotly_chart(fig, use_container_width=True)
-    # === MODIFICACIÓN CLAVE: Formatear el texto de las etiquetas ===
-    # Usamos update_traces para aplicar un template de texto a todas las barras.
-    # %{y:.3f} significa: usa el valor del eje Y y formatéalo como un número flotante con 3 decimales.
-    fig.update_traces(texttemplate='%{y:.3f}', textposition='outside') # 'outside' coloca el texto fuera de la barra
-
-    st.plotly_chart(fig, use_container_width=True)
-
 # ========================================
 # === ANALISIS DETALLADO POR ASESOR (ACORDEONES) ===
 # ========================================
