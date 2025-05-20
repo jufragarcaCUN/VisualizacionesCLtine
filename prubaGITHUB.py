@@ -158,85 +158,6 @@ except Exception as e:
     acordeonYesid = pd.DataFrame()
 
 #======================
-##funcion nuevo Yesid 
-
-def graficar_polaridad_subjetividad_gauges2(df):
-    if df is None or df.empty:
-        st.warning("⚠️ El DataFrame está vacío o no fue cargado correctamente.")
-        return
-
-    # Corregimos el nombre del asesor si existe la columna
-    if 'asesor' in df.columns:
-        df['asesor'] = df['asesor'].apply(corregir_nombre)
-
-    # Convertimos a numérico las columnas que nos interesan
-    for col in ['polarity', 'subjectivity', 'efectividad']:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-
-    # Calculamos los promedios si existen las columnas
-    promedio_polarity = df['polarity'].mean() if 'polarity' in df.columns else None
-    promedio_subjectivity = df['subjectivity'].mean() if 'subjectivity' in df.columns else None
-    promedio_efectividad = df['efectividad'].mean() if 'efectividad' in df.columns else None
-
-    # Mostramos los resultados en columnas
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        if promedio_polarity is not None:
-            st.metric(label="Promedio Polaridad", value=round(promedio_polarity, 3))
-        else:
-            st.info("No se encontró la columna 'polarity'.")
-
-    with col2:
-        if promedio_subjectivity is not None:
-            st.metric(label="Promedio Subjetividad", value=round(promedio_subjectivity, 3))
-        else:
-            st.info("No se encontró la columna 'subjectivity'.")
-
-    with col3:
-        if promedio_efectividad is not None:
-            st.metric(label="Promedio Efectividad", value=round(promedio_efectividad, 3))
-        else:
-            st.info("No se encontró la columna 'efectividad'.")
-
-
-    # --- Gráfico Gauge Subjetividad ---
-    if has_subjectivity:
-        with col2:
-            fig_subjetividad = go.Figure(go.Indicator(
-                mode="gauge+number+delta",
-                value=subjetividad_total,
-                delta={
-                    'reference': 0.5,
-                    'increasing': {'color': 'green', 'symbol': '▲'},
-                    'decreasing': {'color': 'red', 'symbol': '▼'},
-                    'position': "bottom",
-                    'font': {'size': 28}
-                },
-                gauge=dict(
-                    axis=dict(range=[0, 1]),
-                    bar={'color': 'darkblue'},
-                    steps=[
-                        {'range': [0.0, 0.3], 'color': '#e5f5e0'},
-                        {'range': [0.3, 0.7], 'color': '#a1d99b'},
-                        {'range': [0.7, 1.0], 'color': '#31a354'}
-                    ],
-                    threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 0.5}
-                ),
-                title={'text': "Subjetividad Promedio General", 'font': {'size': 18}},
-                number={'font': {'size': 24}}
-            ))
-            fig_subjetividad.update_layout(
-                height=700,
-                margin=dict(l=10, r=10, t=40, b=10),
-                font=dict(family="Arial", size=12)
-            )
-            st.plotly_chart(fig_subjetividad, use_container_width=True)
-    else:
-        with col2:
-            st.info("Gauge de Subjetividad no disponible.")
-
 ###############################################################
 
 # ========================================
@@ -690,12 +611,7 @@ def mostrar_acordeones_simple(df):
 # === FUNCIÓN PRINCIPAL STREAMLIT =======
 # ========================================
 def main():
-       # --- Inicia Gráfico: Gauges Sentimiento General ---
-    graficar_polaridad_subjetividad_gauges2(df_POlaVssub)
-    # --- Fin Gráfico: Gauges Sentimiento General ---
-    # --- Inicia Titulo de la Aplicación (Letra Más Grande) ---
-    st.title("📊 Reporte de Llamadas y Sentimiento por Asesor")
-    # --- Fin Titulo de la Aplicación ---
+     
 
     insetCodigo()
 
