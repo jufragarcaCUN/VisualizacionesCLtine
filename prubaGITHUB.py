@@ -399,22 +399,18 @@ def mostrar_acordeones(df):
                     st.write("🎯 Resultado: ? Resultado desconocido — Puntaje: N/A")
 
                 if len(df_asesor) > 1 and index < len(df_asesor) - 1:
-                
+                    # This line was previously empty, now it's correctly indented
+                    st.markdown("---")
 
-##############################
-
-def cargar_y_mostrar_columnas(df): # Correcto: la función recibe 'df'
+def cargar_y_mostrar_columnas(df):
     """
     Carga un DataFrame y muestra sus columnas.
     """
-    if df is not None and not df.empty: # Correcto: usa 'df'
+    if df is not None and not df.empty:
         st.write("Columnas del DataFrame:")
-        st.write(df.columns.tolist()) # Correcto: usa 'df'
+        st.write(df.columns.tolist())
     else:
         st.warning("El DataFrame está vacío o no ha sido cargado.")
-
-
-##############################
 
 def main():
     insetCodigo()
@@ -443,7 +439,7 @@ def main():
     st.markdown("---")
 
     mostrar_acordeones(df_acordeon)
-    ##############solo mover esto################
+    # ##############solo mover esto################
     cargar_y_mostrar_columnas(df_POlaVssub)
 
 
