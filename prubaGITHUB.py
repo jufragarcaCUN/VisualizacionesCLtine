@@ -161,50 +161,6 @@ except Exception as e:
 ###############################################################
 
 # ========================================
-# === FUNCIONES DE SOPORTE ==============
-# ========================================
-def get_image_base64(image_path):
-    try:
-        with open(image_path, "rb") as f:
-            return base64.b64encode(f.read()).decode()
-    except Exception:
-        return None
-
-def insetCodigo():
-    col1, col2 = st.columns(2)
-    img_height = "150px"
-    img_style = f"height: {img_height}; object-fit: contain; margin: auto; display: block;"
-    with col1:
-        img1_base64 = get_image_base64(logoCun)
-        if img1_base64:
-            st.markdown(f'<img src="data:image/png;base64,{img1_base64}" style="{img_style}"/>', unsafe_allow_html=True)
-        else:
-             st.warning(f"⚠️ Logo CUN no encontrado en: {logoCun}")
-    with col2:
-        img2_base64 = get_image_base64(logoCltiene)
-        if img2_base64:
-            st.markdown(f'<img src="data:image/png;base64,{img2_base64}" style="{img_style}"/>', unsafe_allow_html=True)
-        else:
-            st.warning(f"⚠️ Logo Cltiene no encontrado en: {logoCltiene}")
-
-def corregir_nombre(nombre):
-    correcciones = {
-        "DanielaLancheros": "Daniela Lancheros",
-        "EdwinMiranda": "Edwin Miranda",
-        "LuisaReyes": "Luisa Reyes",
-        "MayerlyAcero": "Mayerly Acero",
-        "NancyMoreno": "Nancy Moreno",
-        "NicolasTovar": "Nicolas Tovar",
-        "johan": "Johan",
-        "NoseEntiendelenombredelasesor": "Desconocido",
-        "NoSeEscucha": "Desconocido",
-        "NotieneNombre": "Desconocido"
-    }
-    nombre_str = str(nombre).strip() if pd.notna(nombre) else ''
-    return correcciones.get(nombre_str, nombre_str)
-
-
-# ========================================
 # === GRÁFICAS ===========================
 # ========================================
 def graficar_puntaje_total(df):
