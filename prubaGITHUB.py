@@ -180,12 +180,14 @@ def cargar_y_mostrar_promedios(df):
         with col2:
             for col_name in columnas_numericas[items_per_col:items_per_col*2]:
                 promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
+                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
+
 
         with col3:
             for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
                 promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
+                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
+
 
         with col4:
             for col_name in columnas_numericas[items_per_col*3:]:
