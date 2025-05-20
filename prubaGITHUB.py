@@ -399,7 +399,28 @@ def mostrar_acordeones(df):
                     st.write("🎯 Resultado: ? Resultado desconocido — Puntaje: N/A")
 
                 if len(df_asesor) > 1 and index < len(df_asesor) - 1:
-                    st.markdown("---")
+                st.markdown("---")
+
+##############################
+
+def cargar_y_mostrar_columnas(dataframe):
+    """
+    Carga un DataFrame y muestra sus columnas.
+    """
+    if dataframe is not None and not dataframe.empty:
+        st.write("Columnas del DataFrame:")
+        st.write(dataframe.columns.tolist())
+    else:
+        st.warning("El DataFrame está vacío o no ha sido cargado.")
+
+# Asumiendo que df_POlaVssub ya está definido y cargado en tu script principal
+# (como en el código que me proporcionaste anteriormente)
+# Si no lo está, necesitarías cargarlo primero, por ejemplo:
+# df_POlaVssub = pd.read_excel("ruta/a/tu/sentimientos_textblob.xlsx")
+
+# Línea para llamar a la función
+cargar_y_mostrar_columnas(df_POlaVssub)
+##############################
 
 def main():
     insetCodigo()
@@ -425,6 +446,8 @@ def main():
     st.markdown("---")
 
     mostrar_acordeones(df_acordeon)
+    ##############solo mover esto################
+    cargar_y_mostrar_columnas(df_POlaVssub)
 
 
 if __name__ == '__main__':
