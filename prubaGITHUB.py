@@ -155,10 +155,9 @@ def cargar_y_mostrar_promedios(df):
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            
             # Aquí es donde se calcula y se muestra el promedio general
             promedio_general_calculado = calcular_promedio_total_numerico(df)
-            st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%"
+            st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
 
         with col2:
             for col_name in columnas_numericas[items_per_col:items_per_col*2]:
@@ -175,77 +174,6 @@ def cargar_y_mostrar_promedios(df):
                 promedio = df[col_name].mean()
                 st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
 
-    else:
-        st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
-
-    
-
-def cargar_y_mostrar_promedios(df):
-    if df is not None and not df.empty:
-        st.markdown("## 📊 Promedio por Columna Numérica")
-
-        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        num_columns = len(columnas_numericas)
-        items_per_col = (num_columns + 3) // 4  # Para distribuir en 4 columnas
-
-        col1, col2, col3, col4 = st.columns(4)
-
-        with col1:
-            for col_name in columnas_numericas[0:items_per_col]:
-                promedio = PeomedioGeneral()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
-
-        with col2:
-            for col_name in columnas_numericas[items_per_col:items_per_col*2]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
-
-        with col3:
-            for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
-
-
-        with col4:
-            for col_name in columnas_numericas[items_per_col*3:]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
-
-    else:
-        st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
-
-
-def cargar_y_mostrar_promedios(df):
-    if df is not None and not df.empty:
-        st.markdown("## 📊 Promedio por Columna Numérica")
-
-        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        num_columns = len(columnas_numericas)
-        items_per_col = (num_columns + 3) // 4
-
-        col1, col2, col3, col4 = st.columns(4)
-
-        with col1:
-            for col_name in columnas_numericas[0:items_per_col]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
-
-        with col2:
-            for col_name in columnas_numericas[items_per_col:items_per_col*2]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
-
-
-        with col3:
-            for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
-
-
-        with col4:
-            for col_name in columnas_numericas[items_per_col*3:]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
     else:
         st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
 
@@ -543,8 +471,6 @@ def mostrar_acordeones(df):
 
                 if len(df_asesor) > 1 and index < len(df_asesor) - 1:
                     st.markdown("---")
-
-
 
 def main():
     insetCodigo()
