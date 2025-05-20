@@ -159,7 +159,7 @@ except Exception as e:
 
 #======================
 ##funcion nuevo Yesid 
-""""""""""""""""""""""
+
 def graficar_polaridad_subjetividad_gauges2(df):
     if df is None or df.empty:
         st.warning("⚠️ El DataFrame de Sentimientos está vacío o no fue cargado correctamente para los gauges.")
