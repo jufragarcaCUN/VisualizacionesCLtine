@@ -388,7 +388,7 @@ def graficar_polaridad_subjetividad_gauges(df):
     #return nombre.strip()
 
 def graficar_polaridad_por_asesor_barras_horizontales(df):
-    import unidecode
+
 
     def corregir_nombre(nombre):
         correcciones = {
