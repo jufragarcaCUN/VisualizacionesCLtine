@@ -162,79 +162,44 @@ except Exception as e:
 
 def graficar_polaridad_subjetividad_gauges2(df):
     if df is None or df.empty:
-        st.warning("⚠️ El DataFrame de Sentimientos está vacío o no fue cargado correctamente para los gauges.")
-        return
-    if 'polarity' not in df.columns:
-        st.error("❌ El DataFrame de Sentimientos no contiene la columna 'polarity' necesaria para el gauge de polaridad.")
-        st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
-        has_polarity = False
-    else:
-        has_polarity = True
-    if 'subjectivity' not in df.columns:
-        st.warning("⚠️ El DataFrame de Sentimientos no contiene la columna 'subjectivity'. El gauge de subjetividad no se mostrará.")
-        st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
-        has_subjectivity = False
-    else:
-        has_subjectivity = True
-    if not has_polarity and not has_subjectivity:
-        st.error("❌ No hay columnas válidas ('polarity', 'subjectivity') en el DataFrame de Sentimientos para generar ningún gauge.")
+        st.warning("⚠️ El DataFrame está vacío o no fue cargado correctamente.")
         return
 
-    if has_polarity:
-        df['asesor'] = df['asesor'].apply(corregir_nombre)   
-        df['polarity'] = pd.to_numeric(df['polarity'], errors='coerce')
-        polaridad_total = df['polarity'].mean()
-        if pd.isna(polaridad_total): 
-            polaridad_total = 0
-    else:
-        polaridad_total = 0
+    # Corregimos el nombre del asesor si existe la columna
+    if 'asesor' in df.columns:
+        df['asesor'] = df['asesor'].apply(corregir_nombre)
 
-    if has_subjectivity:
-        df['asesor'] = df['asesor'].apply(corregir_nombre)   
-        df['subjectivity'] = pd.to_numeric(df['subjectivity'], errors='coerce')
-        subjetividad_total = df['subjectivity'].mean()
-        if pd.isna(subjetividad_total): 
-            subjetividad_total = 0.5
-    else:
-        subjetividad_total = 0.5
+    # Convertimos a numérico las columnas que nos interesan
+    for col in ['polarity', 'subjectivity', 'efectividad']:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
 
-    col1, col2 = st.columns(2)
+    # Calculamos los promedios si existen las columnas
+    promedio_polarity = df['polarity'].mean() if 'polarity' in df.columns else None
+    promedio_subjectivity = df['subjectivity'].mean() if 'subjectivity' in df.columns else None
+    promedio_efectividad = df['efectividad'].mean() if 'efectividad' in df.columns else None
 
-    # --- Gráfico Gauge Polaridad ---
-    if has_polarity:
-        with col1:
-            fig_polaridad = go.Figure(go.Indicator(
-                mode="gauge+number+delta",
-                value=polaridad_total,
-                delta={
-                    'reference': 0,
-                    'increasing': {'color': 'green', 'symbol': '▲'},
-                    'decreasing': {'color': 'red', 'symbol': '▼'},
-                    'position': "bottom",
-                    'font': {'size': 28}
-                },
-                gauge=dict(
-                    axis=dict(range=[-1, 1]),
-                    bar=dict(color='darkgreen'),
-                    steps=[
-                        {'range': [-1, -0.3], 'color': '#c7e9c0'},
-                        {'range': [-0.3, 0.3], 'color': '#a1d99b'},
-                        {'range': [0.3, 1], 'color': '#31a354'}
-                    ],
-                    threshold={'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': 0}
-                ),
-                title={'text': "Polaridad Promedio General", 'font': {'size': 18}},
-                number={'font': {'size': 24}}
-            ))
-            fig_polaridad.update_layout(
-                height=700,
-                margin=dict(l=10, r=10, t=40, b=10),
-                font=dict(family="Arial", size=12)
-            )
-            st.plotly_chart(fig_polaridad, use_container_width=True)
-    else:
-        with col1:
-            st.info("Gauge de Polaridad no disponible.")
+    # Mostramos los resultados en columnas
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        if promedio_polarity is not None:
+            st.metric(label="Promedio Polaridad", value=round(promedio_polarity, 3))
+        else:
+            st.info("No se encontró la columna 'polarity'.")
+
+    with col2:
+        if promedio_subjectivity is not None:
+            st.metric(label="Promedio Subjetividad", value=round(promedio_subjectivity, 3))
+        else:
+            st.info("No se encontró la columna 'subjectivity'.")
+
+    with col3:
+        if promedio_efectividad is not None:
+            st.metric(label="Promedio Efectividad", value=round(promedio_efectividad, 3))
+        else:
+            st.info("No se encontró la columna 'efectividad'.")
+
 
     # --- Gráfico Gauge Subjetividad ---
     if has_subjectivity:
