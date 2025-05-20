@@ -399,7 +399,7 @@ def mostrar_acordeones(df):
                     st.write("🎯 Resultado: ? Resultado desconocido — Puntaje: N/A")
 
                 if len(df_asesor) > 1 and index < len(df_asesor) - 1:
-                st.markdown("---")
+                
 
 ##############################
 
