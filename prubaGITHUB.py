@@ -66,7 +66,7 @@ ruta_archivo_sentimientos = carpeta_base / "sentimientos_textblob.xlsx"
 nombre_archivo_resultado_llamada_directo = "resultados_llamadas_directo.xlsx"
 puntejeAcordeoneros = carpeta_base / nombre_archivo_resultado_llamada_directo
 resumen_llamadita = carpeta_base / "resumen_llamadas.xlsx"
-
+###############################################################################################
 try:
     df_puntajeAsesores = pd.read_excel(ruta_archivo_reporte_puntaje)
     if 'asesor' in df_puntajeAsesores.columns:
@@ -77,7 +77,7 @@ except FileNotFoundError:
 except Exception as e:
     st.error(f"❌ Error al cargar puntajes desde '{ruta_archivo_reporte_puntaje}': {e}")
     df_puntajeAsesores = pd.DataFrame()
-
+#################################################################
 try:
     df_POlaVssub = pd.read_excel(ruta_archivo_sentimientos)
     if 'asesor' in df_POlaVssub.columns:
@@ -403,32 +403,35 @@ def mostrar_acordeones(df):
 
 def cargar_y_mostrar_columnas(df):
     if df is not None and not df.empty:
-        st.write("Columnas del DataFrame:")
-        
+        st.markdown("## 📋 Columnas del DataFrame")
+
         all_columns = df.columns.tolist()
         num_columns = len(all_columns)
-        
-        items_per_streamlit_col = (num_columns + 3) // 4
-        
+        items_per_col = (num_columns + 3) // 4  # Divide en 4 columnas visuales
+
         col1, col2, col3, col4 = st.columns(4)
-        
+
         with col1:
-            for col_name in all_columns[0:items_per_streamlit_col]:
-                st.write(f"- {col_name}")
-        
+            st.markdown("### 📑 Col 1")
+            for col_name in all_columns[0:items_per_col]:
+                st.markdown(f"- `{col_name}`")
+
         with col2:
-            for col_name in all_columns[items_per_streamlit_col:items_per_streamlit_col*2]:
-                st.write(f"- {col_name}")
-        
+            st.markdown("### 📑 Col 2")
+            for col_name in all_columns[items_per_col:items_per_col*2]:
+                st.markdown(f"- `{col_name}`")
+
         with col3:
-            for col_name in all_columns[items_per_streamlit_col*2:items_per_streamlit_col*3]:
-                st.write(f"- {col_name}")
-        
+            st.markdown("### 📑 Col 3")
+            for col_name in all_columns[items_per_col*2:items_per_col*3]:
+                st.markdown(f"- `{col_name}`")
+
         with col4:
-            for col_name in all_columns[items_per_streamlit_col*3:items_per_streamlit_col*4]:
-                st.write(f"- {col_name}")
+            st.markdown("### 📑 Col 4")
+            for col_name in all_columns[items_per_col*3:]:
+                st.markdown(f"- `{col_name}`")
     else:
-        st.warning("El DataFrame está vacío o no ha sido cargado.")
+        st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
 
 def main():
     insetCodigo()
