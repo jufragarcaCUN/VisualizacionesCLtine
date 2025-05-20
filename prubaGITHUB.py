@@ -129,6 +129,61 @@ except Exception as e:
     print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}")
     resultados_llamadas_directo = pd.DataFrame()
 
+def cargar_y_mostrar_promedios(df):
+    if df is not None and not df.empty:
+        st.markdown("## 📊 Promedio por Columna Numérica")
+
+        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+        num_columns = len(columnas_numericas)
+        items_per_col = (num_columns + 3) // 4
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            for col_name in columnas_numericas[0:items_per_col]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
+
+        with col2:
+            for col_name in columnas_numericas[items_per_col:items_per_col*2]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
+
+        with col3:
+            for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
+
+        with col4:
+            for col_name in columnas_numericas[items_per_col*3:]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
+    else:
+        st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
+
+def display_summary_metrics(df_puntaje, df_sentimiento):
+    st.markdown("## 📋 Resumen General de Métricas")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    avg_puntaje = df_puntaje["puntaje_promedio"].mean() if "puntaje_promedio" in df_puntaje.columns and not df_puntaje.empty else 0
+
+    conf_col = "confidence" if "confidence" in df_sentimiento.columns else "confianza"
+    avg_confianza = df_sentimiento[conf_col].mean() if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
+    
+    avg_polarity = df_sentimiento["polarity"].mean() if "polarity" in df_sentimiento.columns and not df_sentimiento.empty else 0
+    
+    avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
+
+    with col1:
+        st.metric("Puntaje Promedio", f"{avg_puntaje:.2%}")
+    with col2:
+        st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
+    with col3:
+        st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
+    with col4:
+        st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
+
 def graficar_puntaje_total(df):
     if df is None or df.empty or 'asesor' not in df.columns or 'puntaje_total' not in df.columns:
         st.warning("⚠️ Datos incompletos para la gráfica de puntaje total.")
@@ -401,60 +456,7 @@ def mostrar_acordeones(df):
                 if len(df_asesor) > 1 and index < len(df_asesor) - 1:
                     st.markdown("---")
 
-def cargar_y_mostrar_promedios(df):
-    if df is not None and not df.empty:
-        st.markdown("## 📊 Promedio por Columna Numérica")
 
-        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        num_columns = len(columnas_numericas)
-        items_per_col = (num_columns + 3) // 4
-
-        col1, col2, col3, col4 = st.columns(4)
-
-        with col1:
-            for col_name in columnas_numericas[0:items_per_col]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
-
-        with col2:
-            for col_name in columnas_numericas[items_per_col:items_per_col*2]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
-
-        with col3:
-            for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
-
-        with col4:
-            for col_name in columnas_numericas[items_per_col*3:]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
-    else:
-        st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
-
-def display_summary_metrics(df_puntaje, df_sentimiento):
-    st.markdown("## 📋 Resumen General de Métricas")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    avg_puntaje = df_puntaje["puntaje_promedio"].mean() if "puntaje_promedio" in df_puntaje.columns and not df_puntaje.empty else 0
-
-    conf_col = "confidence" if "confidence" in df_sentimiento.columns else "confianza"
-    avg_confianza = df_sentimiento[conf_col].mean() if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
-    
-    avg_polarity = df_sentimiento["polarity"].mean() if "polarity" in df_sentimiento.columns and not df_sentimiento.empty else 0
-    
-    avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
-
-    with col1:
-        st.metric("Puntaje Promedio", f"{avg_puntaje:.2%}")
-    with col2:
-        st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
-    with col3:
-        st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
-    with col4:
-        st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
 
 def main():
     insetCodigo()
