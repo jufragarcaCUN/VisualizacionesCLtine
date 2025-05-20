@@ -402,16 +402,43 @@ def mostrar_acordeones(df):
                     # This line was previously empty, now it's correctly indented
                     st.markdown("---")
 
+import streamlit as st
+import pandas as pd
+###############################
 def cargar_y_mostrar_columnas(df):
     """
-    Carga un DataFrame y muestra sus columnas.
+    Carga un DataFrame y muestra sus columnas, distribuyéndolas en 4 columnas de Streamlit
+    si el DataFrame no está vacío.
     """
     if df is not None and not df.empty:
         st.write("Columnas del DataFrame:")
-        st.write(df.columns.tolist())
+        
+        # Get the list of columns
+        all_columns = df.columns.tolist()
+        num_columns = len(all_columns)
+        
+        # Determine how to split the columns into 4 Streamlit columns
+        # Calculate the number of items per column. Use ceil to ensure all items are included.
+        items_per_streamlit_col = (num_columns + 3) // 4 # Equivalent to math.ceil(num_columns / 4)
+        
+        # Create 4 Streamlit columns
+        cols = st.columns(4)
+        
+        for i in range(4):
+            with cols[i]:
+                # Slice the list of columns for each Streamlit column
+                start_index = i * items_per_streamlit_col
+                end_index = start_index + items_per_streamlit_col
+                
+                # Get the subset of columns for the current Streamlit column
+                subset_columns = all_columns[start_index:end_index]
+                
+                if subset_columns:
+                    for col_name in subset_columns:
+                        st.write(f"- {col_name}") # Display each column name as a list item
     else:
-        st.warning("El DataFrame está vacío o no ha sido cargado.")
-
+        st.warning("El DataFrame está vacío o no ha sido cargado."))
+################################
 def main():
     insetCodigo()
 
