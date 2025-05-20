@@ -383,9 +383,9 @@ def graficar_polaridad_subjetividad_gauges(df):
 
 
 # Función ficticia para corregir nombre, reemplazar con tu implementación real
-def corregir_nombre(nombre):
+#def corregir_nombre(nombre):
     # Ejemplo simple: quitar espacios extra
-    return nombre.strip()
+    #return nombre.strip()
 
 def graficar_polaridad_por_asesor_barras_horizontales(df):
     if df is None or df.empty:
