@@ -1,6 +1,3 @@
-# ========================================
-# === IMPORTACIONES NECESARIAS ==========
-# ========================================
 import os
 import re
 import sys
@@ -18,14 +15,7 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from tabulate import tabulate
 
-# ========================================
-# === CONFIGURACIÓN DE STREAMLIT PAGE ===
-# ========================================
 st.set_page_config(layout="wide")
-
-# ========================================
-# === FUNCIONES DE SOPORTE ==============
-# ========================================
 
 def corregir_nombre(nombre):
     correcciones = {
@@ -67,24 +57,17 @@ def insetCodigo():
         else:
             st.warning(f"⚠️ Logo Cltiene no encontrado en: {logoCltiene}")
 
-# ========================================
-# === RUTAS RELATIVAS ====================
-# ========================================
 carpeta_base = Path(".")
 logoCun = carpeta_base / "CUN-1200X1200.png"
 logoCltiene = carpeta_base / "clTiene2.jpeg"
 
 ruta_archivo_reporte_puntaje = carpeta_base / "reporte_llamadas_asesores.xlsx"
 ruta_archivo_sentimientos = carpeta_base / "sentimientos_textblob.xlsx"
-nombre_archivo_reporte_acordeon = "acordon1.xlsx"
+nombre_archivo_reporte_acordeon = "acordon1.xlsx" # This was not used for df_acordeon loading
 nombre_archivo_resultado_llamada_directo = "resultados_llamadas_directo.xlsx"
-ruta_archivo_reporte_acordeon = carpeta_base / nombre_archivo_reporte_acordeon
 puntejeAcordeoneros = carpeta_base / nombre_archivo_resultado_llamada_directo
 resumen_llamadita = carpeta_base / "resumen_llamadas.xlsx"
 
-# ========================================
-# === CARGA DE DATAFRAMES ===============
-# ========================================
 try:
     df_puntajeAsesores = pd.read_excel(ruta_archivo_reporte_puntaje)
     if 'asesor' in df_puntajeAsesores.columns:
@@ -147,27 +130,23 @@ except Exception as e:
     print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}")
     resultados_llamadas_directo = pd.DataFrame()
 
-try:
-    acordeonYesid = pd.read_excel(ruta_archivo_reporte_acordeon)
-    st.success(f"Archivo {nombre_archivo_reporte_acordeon} cargado correctamente.")
-except FileNotFoundError:
-    st.error(f"No se encontró el archivo: {nombre_archivo_reporte_acordeon}")
-    acordeonYesid = pd.DataFrame()
-except Exception as e:
-    st.error(f"Error cargando {nombre_archivo_reporte_acordeon}: {e}")
-    acordeonYesid = pd.DataFrame()
+# The file `acordeonYesid` was not used in the main function or other parts,
+# so its loading has been commented out to avoid confusion/unnecessary operations.
+# try:
+#     acordeonYesid = pd.read_excel(carpeta_base / nombre_archivo_reporte_acordeon)
+#     st.success(f"Archivo {nombre_archivo_reporte_acordeon} cargado correctamente.")
+# except FileNotFoundError:
+#     st.error(f"No se encontró el archivo: {nombre_archivo_reporte_acordeon}")
+#     acordeonYesid = pd.DataFrame()
+# except Exception as e:
+#     st.error(f"Error cargando {nombre_archivo_reporte_acordeon}: {e}")
+#     acordeonYesid = pd.DataFrame()
 
-#======================
-###############################################################
-
-# ========================================
-# === GRÁFICAS ===========================
-# ========================================
 def graficar_puntaje_total(df):
     if df is None or df.empty or 'asesor' not in df.columns or 'puntaje_total' not in df.columns:
         st.warning("⚠️ Datos incompletos para la gráfica de puntaje total.")
         return
-    df['asesor'] = df['asesor'].apply(corregir_nombre)    
+    df['asesor'] = df['asesor'].apply(corregir_nombre)
     df['puntaje_total'] = pd.to_numeric(df['puntaje_total'], errors='coerce')
     df_cleaned = df.dropna(subset=['asesor', 'puntaje_total'])
     if df_cleaned.empty:
@@ -185,14 +164,13 @@ def graficar_puntaje_total(df):
     )
     fig.update_traces(texttemplate='%{text:.1f}', textposition='outside')
     fig.update_layout(
-        height=1000, # Misma altura para todas las gráficas
+        height=1000,
         xaxis_tickangle=-45, plot_bgcolor="white",
-        font=dict(family="Arial", size=12), # Tamaño de fuente original del código proporcionado
+        font=dict(family="Arial", size=12),
         title_x=0.5
     )
-    # --- Inicia Gráfico: Puntaje Total ---
-    st.plotly_chart(fig, use_container_width=True)
-    # --- Fin Gráfico: Puntaje Total ---
+    st.plotly_chart(fig, use_container_width=True, key="puntaje_total_chart")
+
 def graficar_asesores_metricas_heatmap(df):
     if df is None or df.empty or 'asesor' not in df.columns:
         st.warning("⚠️ Datos incompletos o faltan columnas necesarias ('asesor') para la gráfica heatmap.")
@@ -202,7 +180,7 @@ def graficar_asesores_metricas_heatmap(df):
         st.warning("⚠️ No se encontraron columnas con '%' en el DataFrame para graficar el heatmap.")
         st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
         return
-    df['asesor'] = df['asesor'].apply(corregir_nombre)       
+    df['asesor'] = df['asesor'].apply(corregir_nombre)
     df_heatmap_data = df[['asesor'] + metric_cols].copy()
     df_heatmap_data = df_heatmap_data.set_index('asesor')
     df_heatmap_data = df_heatmap_data.apply(pd.to_numeric, errors='coerce').fillna(0)
@@ -212,19 +190,17 @@ def graficar_asesores_metricas_heatmap(df):
     fig = go.Figure(data=go.Heatmap(
         z=df_heatmap_data.values, x=df_heatmap_data.columns, y=df_heatmap_data.index,
         colorscale='Greens',
-        colorbar=dict(title=dict(text="Valor (%)", font=dict(size=24)), tickfont=dict(size=24)), # Corregido sintaxis, mantiene tamaño original
+        colorbar=dict(title=dict(text="Valor (%)", font=dict(size=24)), tickfont=dict(size=24)),
         hovertemplate='Asesor: %{y}<br>Métrica: %{x}<br>Valor: %{z:.2f}%<extra></extra>'
     ))
     fig.update_layout(
         title="Heatmap: Asesor vs. Métricas con Porcentaje (%)",
         xaxis_title="Métrica (%)", yaxis_title="Asesor",
-        font=dict(family="Arial", size=12), # Tamaño de fuente original del código proporcionado
-        height=700, # Misma altura para todas las gráficas
+        font=dict(family="Arial", size=12),
+        height=700,
         title_x=0.5, plot_bgcolor='white'
     )
-    # --- Inicia Gráfico: Heatmap Métricas ---
-    st.plotly_chart(fig, use_container_width=True)
-    # --- Fin Gráfico: Heatmap Métricas ---
+    st.plotly_chart(fig, use_container_width=True, key="heatmap_metrics_chart")
 
 def graficar_polaridad_subjetividad_gauges(df):
     if df is None or df.empty:
@@ -247,26 +223,25 @@ def graficar_polaridad_subjetividad_gauges(df):
         return
 
     if has_polarity:
-        df['asesor'] = df['asesor'].apply(corregir_nombre)   
+        df['asesor'] = df['asesor'].apply(corregir_nombre)
         df['polarity'] = pd.to_numeric(df['polarity'], errors='coerce')
         polaridad_total = df['polarity'].mean()
-        if pd.isna(polaridad_total): 
+        if pd.isna(polaridad_total):
             polaridad_total = 0
     else:
         polaridad_total = 0
 
     if has_subjectivity:
-        df['asesor'] = df['asesor'].apply(corregir_nombre)   
+        df['asesor'] = df['asesor'].apply(corregir_nombre)
         df['subjectivity'] = pd.to_numeric(df['subjectivity'], errors='coerce')
         subjetividad_total = df['subjectivity'].mean()
-        if pd.isna(subjetividad_total): 
+        if pd.isna(subjetividad_total):
             subjetividad_total = 0.5
     else:
         subjetividad_total = 0.5
 
     col1, col2 = st.columns(2)
 
-    # --- Gráfico Gauge Polaridad ---
     if has_polarity:
         with col1:
             fig_polaridad = go.Figure(go.Indicator(
@@ -297,12 +272,11 @@ def graficar_polaridad_subjetividad_gauges(df):
                 margin=dict(l=10, r=10, t=40, b=10),
                 font=dict(family="Arial", size=12)
             )
-            st.plotly_chart(fig_polaridad, use_container_width=True)
+            st.plotly_chart(fig_polaridad, use_container_width=True, key="gauge_polarity")
     else:
         with col1:
             st.info("Gauge de Polaridad no disponible.")
 
-    # --- Gráfico Gauge Subjetividad ---
     if has_subjectivity:
         with col2:
             fig_subjetividad = go.Figure(go.Indicator(
@@ -333,20 +307,13 @@ def graficar_polaridad_subjetividad_gauges(df):
                 margin=dict(l=10, r=10, t=40, b=10),
                 font=dict(family="Arial", size=12)
             )
-            st.plotly_chart(fig_subjetividad, use_container_width=True)
+            st.plotly_chart(fig_subjetividad, use_container_width=True, key="gauge_subjectivity")
     else:
         with col2:
             st.info("Gauge de Subjetividad no disponible.")
 
-
-# Función ficticia para corregir nombre, reemplazar con tu implementación real
-#def corregir_nombre(nombre):
-    # Ejemplo simple: quitar espacios extra
-    #return nombre.strip()
-
 def graficar_polaridad_por_asesor_barras_horizontales(df):
-    # --- Función local corregir_nombre sin librerías externas ---
-    def corregir_nombre(nombre):
+    def corregir_nombre_local(nombre):
         correcciones = {
             "danielalancheros": "Daniela Lancheros",
             "edwinmiranda": "Edwin Miranda",
@@ -359,14 +326,10 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
             "noseescucha": "Desconocido",
             "notienenombre": "Desconocido"
         }
-
         if not nombre:
             return "Desconocido"
-
-        # Normalización manual mínima: minúsculas + sin espacios
         nombre_str = str(nombre).strip().lower().replace(" ", "")
         return correcciones.get(nombre_str, str(nombre).title().strip())
-    # ------------------------------------------------------------
 
     if df is None or df.empty:
         st.warning("⚠️ El DataFrame para la gráfica de Polaridad está vacío o no fue cargado correctamente.")
@@ -376,7 +339,7 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         st.info(f"📋 Columnas disponibles: {df.columns.tolist()}")
         return
 
-    df['asesor'] = df['asesor'].astype(str).apply(corregir_nombre)
+    df['asesor'] = df['asesor'].astype(str).apply(corregir_nombre_local)
     df['polarity'] = pd.to_numeric(df['polarity'], errors='coerce')
     df_cleaned = df.dropna(subset=['asesor', 'polarity'])
 
@@ -387,7 +350,6 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
     df_polaridad_avg = df_cleaned.groupby('asesor', as_index=False)['polarity'].mean()
     df_polaridad_avg = df_polaridad_avg.sort_values('polarity', ascending=True)
 
-    # Gráfico de barras verticales (puedo ajustarlo a horizontal si quieres)
     fig = px.bar(
         df_polaridad_avg,
         x='asesor',
@@ -409,116 +371,9 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
     )
 
     fig.update_traces(texttemplate='%{y:.3f}', textposition='outside')
-    st.plotly_chart(fig, use_container_width=True)
-# ========================================
-# === ANALISIS DETALLADO POR ASESOR (ACORDEONES) ===
-# ========================================
-# (El resto de tu código para los acordeones no necesita modificación para esto)
+    st.plotly_chart(fig, use_container_width=True, key="polarity_by_asesor_chart")
+
 def mostrar_acordeones(df):
-    # Validamos que el DataFrame no esté vacío ni sea None
-    if df is None or df.empty:
-        st.warning("⚠️ El DataFrame está vacío o no fue cargado correctamente.")
-        return
-
-    # Obtenemos la lista única de asesores presentes en la columna 'asesor'
-    asesores = df['asesor'].unique()
-
-    # Iteramos por cada asesor
-    for asesor in asesores:
-        # Filtramos las filas del DataFrame que pertenecen al asesor actual
-        df_asesor = df[df['asesor'] == asesor]
-
-        # OMITIMOS LA VISUALIZACIÓN CON EXPANDER PARA QUE NO SE MUESTRE
-        # En vez de usar st.expander, simplemente no mostramos nada
-
-        # Esta parte del código queda funcional pero oculta
-        for i, fila in df_asesor.iterrows():
-            #st.markdown("---")  # Línea divisoria entre llamadas
-
-            # Iteramos por cada columna del DataFrame (excepto 'asesor')
-            for columna in df.columns:
-                if columna == 'asesor':
-                    continue  # Saltamos la columna 'asesor'
-
-                # Obtenemos el valor de esta columna para la fila actual
-                valor = fila[columna]
-                try:
-                    # Intentamos convertir el valor a entero
-                    valor_int = int(valor)
-
-                    # Verificamos si cumple con el mínimo (al menos 1)
-                    estado = "✅" if valor_int >= 1 else "❌"
-
-                    # Mostramos la categoría, el valor y el estado
-                    # Esta línea es la que normalmente mostraría contenido
-                    # st.markdown(f"🔹 {columna}: {valor_int} {estado} (mínimo 1)")
-                except:
-                    # Si el valor no es numérico, lo mostramos tal cual
-                    # st.markdown(f"🔹 {columna}: {valor}")
-                    pass
-
-# ========================================
-# === ANALISIS DETALLADO POR ASESOR (ACORDEONES) ===
-# ========================================
-def mostrar_acordeones(df):
-    # Validamos que el DataFrame no esté vacío ni sea None
-    if df is None or df.empty:
-        st.warning("⚠️ El DataFrame está vacío o no fue cargado correctamente.")
-        return
-
-    # Obtenemos la lista única de asesores presentes en la columna 'asesor'
-    asesores = df['asesor'].unique()
-
-    # Iteramos por cada asesor
-    for asesor in asesores:
-        # Filtramos las filas del DataFrame que pertenecen al asesor actual
-        df_asesor = df[df['asesor'] == asesor]
-
-        # OMITIMOS LA VISUALIZACIÓN CON EXPANDER PARA QUE NO SE MUESTRE
-        # En vez de usar st.expander, simplemente no mostramos nada
-
-        # Esta parte del código queda funcional pero oculta
-        for i, fila in df_asesor.iterrows():
-            #st.markdown("---")  # Línea divisoria entre llamadas
-
-            # Iteramos por cada columna del DataFrame (excepto 'asesor')
-            for columna in df.columns:
-                if columna == 'asesor':
-                    continue  # Saltamos la columna 'asesor'
-
-                # Obtenemos el valor de esta columna para la fila actual
-                valor = fila[columna]
-                try:
-                    # Intentamos convertir el valor a entero
-                    valor_int = int(valor)
-
-                    # Verificamos si cumple con el mínimo (al menos 1)
-                    estado = "✅" if valor_int >= 1 else "❌"
-
-                    # Mostramos la categoría, el valor y el estado
-                    # Esta línea es la que normalmente mostraría contenido
-                    # st.markdown(f"🔹 {columna}: {valor_int} {estado} (mínimo 1)")
-                except:
-                    # Si el valor no es numérico, lo mostramos tal cual
-                    # st.markdown(f"🔹 {columna}: {valor}")
-                    pass
-
-
-#000000000000000000000000000000000000000
-#0000000 acordeon Yesid
-##################################
-
-# ========================================
-# === ANALISIS DETALLADO POR ASESOR (ACORDEONES) ===
-# ========================================
-# Asegúrate de que la función corregir_nombre esté definida antes en el script
-# Asegúrate de que las importaciones principales (pandas, streamlit) estén al inicio del script
-# Si prefieres importar dentro de la función, mantén las líneas de importación aquí
-
-import streamlit as st
-import pandas as pd
-
-def mostrar_acordeones_simple(df):
     if df is None or df.empty:
         st.warning("⚠️ El DataFrame está vacío o no fue cargado correctamente.")
         return
@@ -539,18 +394,15 @@ def mostrar_acordeones_simple(df):
                 filename = row.get('archivo', 'Archivo desconocido')
                 st.write(f"Analizando: **{filename}**")
 
-                # Detectar automáticamente las columnas *_conteo
                 columnas_conteo = [col for col in df.columns if col.endswith('_conteo')]
 
                 for col in columnas_conteo:
                     categoria = col.replace('_conteo', '')
                     conteo = row.get(col, 'N/A')
 
-                    # Mostrar ✅ o ❌ basado en conteo
                     cumple = '✅' if pd.notna(conteo) and conteo >= 1 else '❌'
                     st.write(f"  🔹 {categoria.replace('_', ' ').capitalize()}: {conteo} {cumple} (mínimo 1)")
 
-                # Mostrar puntaje y resultado final
                 puntaje = row.get('puntaje_final_%', None)
                 if pd.notna(puntaje):
                     resultado = 'Llamada efectiva' if puntaje >= 80 else 'No efectiva'
@@ -561,61 +413,32 @@ def mostrar_acordeones_simple(df):
 
                 if len(df_asesor) > 1 and index < len(df_asesor) - 1:
                     st.markdown("---")
-                    #############nuevo acordeon 
 
-# ========================================
-# === FUNCIÓN PRINCIPAL STREAMLIT =======
-# ========================================
 def main():
-     
-
     insetCodigo()
 
-    # --- Separa un grafico ---
     st.markdown("---")
-    # --- Fin separación ---
 
-    # --- Inicia sección Gráficos Resumen (Letra Más Grande) ---
     st.header("📈 Gráficos Resumen")
-    # --- Fin sección Gráficos Resumen ---
 
-    # --- Inicia Gráfico: Puntaje Total ---
     graficar_puntaje_total(df_puntajeAsesores)
-    # --- Fin Gráfico: Puntaje Total ---
 
-    # --- Separa un grafico ---
     st.markdown("---")
-    # --- Fin separación ---
 
-    # --- Inicia Gráfico: Heatmap Métricas ---
     graficar_asesores_metricas_heatmap(df_puntajeAsesores)
-    # --- Fin Gráfico: Heatmap Métricas ---
 
-    # --- Separa un grafico ---
     st.markdown("---")
-    # --- Fin separación ---
 
- --
+    graficar_polaridad_subjetividad_gauges(df_POlaVssub)
 
-    # --- Separa un grafico ---
     st.markdown("---")
-    # --- Fin separación ---
+
     graficar_polaridad_por_asesor_barras_horizontales(df_resumen)
 
-
-
-    # --- Separa un grafico ---
     st.markdown("---")
-    # --- Fin separación ---
 
-    # --- Inicia sección Detalle por Asesor ---
     mostrar_acordeones(df_acordeon)
-    # --- Fin sección Detalle por Asesor ---
-    mostrar_acordeones_simple(df_acordeon)
 
 
-# ========================================
-# === EJECUCIÓN DEL PROGRAMA ============
-# ========================================
-#if __name__ == '__main__':
- #   main()
+if __name__ == '__main__':
+    main()
