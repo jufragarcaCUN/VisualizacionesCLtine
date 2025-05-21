@@ -153,7 +153,7 @@ def calcular_promedio_total_numerico(df):
             st.write(f"Promedio de 'puntaje_final_%': {promedio_puntaje_final:.2f}%")
     else:
         st.write("La columna 'puntaje_final_%' no se encontró en el DataFrame.")
-    # -----------------------------------------------------------
+   
 
     if df is not None and not df.empty:
         columnas_numericas = df.select_dtypes(include='number').columns.tolist()
@@ -180,8 +180,8 @@ def cargar_y_mostrar_promedios(df):
 
         with col1:
             pass
-            #promedio_general_calculado = calcular_promedio_total_numerico(df)
-            #st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
+            promedio_general_calculado = calcular_promedio_total_numerico(df)
+            st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
 
         with col2:
             for col_name in columnas_numericas[items_per_col:items_per_col*2]:
