@@ -131,14 +131,22 @@ except Exception as e:
 
 import streamlit as st
 
-def calcular_promedio_total_numerico():
-    st.write("Hola") # Esto imprimirá solo "Hola" en tu aplicación Streamlit
-    return # <--- Si hay un 'return' aquí, la función termina inmediatamente.
-           # Todo el código de cálculo (if df is not None..., etc.) NUNCA se ejecutará.
+import streamlit as st # Asegúrate de que streamlit esté importado en tu script principal
 
-    resultado = 0.0
-    print(f"DEBUG: calcular_promedio_total_numerico devuelve (df None o vacío): {resultado}")
-    return resultado
+def calcular_promedio_total_numerico(df):
+    st.write("Hola") 
+    st.write("Columnas del DataFrame recibido:", df.columns.tolist())
+
+    if df is not None and not df.empty:
+        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+        if not columnas_numericas:
+            return 0.0
+
+        promedios_individuales = [df[col].mean() for col in columnas_numericas]
+
+        return sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
+
+    return 0.0
 
 def cargar_y_mostrar_promedios(df):
     if df is not None and not df.empty:
@@ -473,7 +481,7 @@ def mostrar_acordeones(df):
 def main():
     insetCodigo()
     st.header("📈 Gráficos Resumen")
-    calcular_promedio_total_numerico()
+    calcular_promedio_total_numerico(df_resumen)
     display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
     
     st.markdown("---")
