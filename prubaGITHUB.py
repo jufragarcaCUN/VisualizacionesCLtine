@@ -138,6 +138,12 @@ def calcular_promedio_total_numerico(df):
         return sum(promedios) / len(promedios) if promedios else 0.0
     return 0.0
 
+# Ejemplo de uso en Streamlit
+def mostrar_promedio_general(df):
+    promedio = calcular_promedio_total_numerico(df)
+    st.write(f"Promedio general: {promedio:.2f}")
+
+
 
 
 
@@ -158,9 +164,11 @@ def display_summary_metrics(df_puntaje, df_sentimiento):
     avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
 
     with col1:
-        st.write("gonorrea")  # Aquí imprimimos tu palabra
-        # Aquí se imprime el promedio que viene de la función calcular_promedio_total_numerico
-        st.metric("Promedio General Numérico", f"{promedio_general * 100:.2f}%")
+        st.write("gonorrea")  # Esto imprime la palabra "gonorrea"
+        promedio_general = calcular_promedio_total_numerico(df_puntaje)  # Esto CALCULA el promedio
+        st.metric("Promedio General Numérico", f"{promedio_general * 100:.2f}%")  # Esto IMPRIME el promedio
+
+
 
     with col2:
         st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
