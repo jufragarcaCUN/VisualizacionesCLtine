@@ -133,16 +133,15 @@ def display_summary_metrics(resultados_llamadas_directo, df_sentimiento):
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # 🔍 Verificamos si df_resumen existe y tiene la columna 'puntaje_total'
-    if df_resumen is not None and not df_resumen.empty:
-        if 'puntaje_final_%' in df_resumen.columns:
-            promedio_puntaje = df_resumen['puntaje_final_%'].mean()
+    if resultados_llamadas_directo is not None and not resultados_llamadas_directo.empty:
+        if 'puntaje_final_%' in resultados_llamadas_directo.columns:
+            promedio_puntaje = resultados_llamadas_directo['puntaje_final_%'].mean()
         else:
             promedio_puntaje = 0.0
-            st.warning("⚠️ La columna 'puntaje_total' no se encuentra en el DataFrame.")
+            st.warning("⚠️ La columna 'puntaje_final_%' no se encuentra en el DataFrame.")
     else:
         promedio_puntaje = 0.0
-        st.warning("⚠️ El DataFrame 'df_resumen' está vacío o no existe.")
+        st.warning("⚠️ El DataFrame 'resultados_llamadas_directo' está vacío o no existe.")
 
     conf_col = "confidence" if "confidence" in df_sentimiento.columns else "confianza"
     avg_confianza = df_sentimiento[conf_col].mean() if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
