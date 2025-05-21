@@ -132,6 +132,8 @@ except Exception as e:
 def calcular_promedio_total_numerico(df):
     if df is not None and not df.empty:
         st.write("Columnas del DataFrame:", df.columns.tolist())
+        promedio_general_calculado = calcular_promedio_total_numerico(df)
+        st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
 
         if 'puntaje_total' in df.columns:
             df['puntaje_total'] = pd.to_numeric(df['puntaje_total'], errors='coerce') * 100
