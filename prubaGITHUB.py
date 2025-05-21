@@ -497,6 +497,7 @@ def main():
 
     mostrar_acordeones(df_acordeon)
     cargar_y_mostrar_promedios(df_resumen)
+    def calcular_promedio_total_numerico(df_resumen)
 
 
 if __name__ == '__main__':
