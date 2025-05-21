@@ -121,7 +121,7 @@ except Exception as e:
 try:
     resultados_llamadas_directo = pd.read_excel(ruta_archivo_reporte_puntaje)
     print(f"Archivo {ruta_archivo_reporte_puntaje.name} importado correctamente.")
-    print(tabulate(resultados_llamadas_directo.head(), headers='keys', tablefmt='psql'))
+    #print(tabulate(resultados_llamadas_directo.head(), headers='keys', tablefmt='psql'))
 except FileNotFoundError:
     print(f"No se encontró el archivo: {ruta_archivo_reporte_puntaje}")
     resultados_llamadas_directo = pd.DataFrame()
