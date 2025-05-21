@@ -137,40 +137,27 @@ import streamlit as st
 import pandas as pd # Asegúrate de que pandas esté importado
 
 def calcular_promedio_total_numerico(df):
-    st.write("Hola")
-    st.write("Columnas del DataFrame recibido:", df.columns.tolist())
+    # Convertir a numérico la columna 'puntaje_final_%', si existe
+    promedio_puntaje_final = None
 
-    # --- Calcular y mostrar el promedio de 'puntaje_final_%' ---
     if 'puntaje_final_%' in df.columns:
-        # Convertir a numérico, forzando errores a NaN
         df['puntaje_final_%'] = pd.to_numeric(df['puntaje_final_%'], errors='coerce')
-        # Calcular el promedio ignorando NaN
         promedio_puntaje_final = df['puntaje_final_%'].mean()
-        
-        if pd.isna(promedio_puntaje_final):
-            st.write("El promedio de 'puntaje_final_%' no pudo ser calculado (quizás todos son valores no numéricos).")
-        else:
-            st.write(f"Promedio de 'puntaje_final_%': {promedio_puntaje_final:.2f}%")
-    else:
-        st.write("La columna 'puntaje_final_%' no se encontró en el DataFrame.")
-   
 
+    # Calcular promedio general de columnas numéricas
+    promedio_general = 0.0
     if df is not None and not df.empty:
         columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        if not columnas_numericas:
-            return 0.0
+        if columnas_numericas:
+            promedios_individuales = [df[col].mean() for col in columnas_numericas]
+            promedio_general = sum(promedios_individuales) / len(promedios_individuales)
 
-        promedios_individuales = [df[col].mean() for col in columnas_numericas]
+    return promedio_general, promedio_puntaje_final
 
-        return sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
-
-    return 0.0
 
 def cargar_y_mostrar_promedios(df):
     if df is not None and not df.empty:
         st.markdown("## 📊 Promedio por Columna Numérica")
-
-        st.write("Columnas del DataFrame:", df.columns.tolist())
 
         columnas_numericas = df.select_dtypes(include='number').columns.tolist()
         num_columns = len(columnas_numericas)
@@ -178,21 +165,30 @@ def cargar_y_mostrar_promedios(df):
 
         col1, col2, col3, col4 = st.columns(4)
 
+        # Columna 1: Promedios generales
         with col1:
-            pass
-            promedio_general_calculado = calcular_promedio_total_numerico(df)
-            st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
+            promedio_general, promedio_final = calcular_promedio_total_numerico(df)
 
+            st.metric("Promedio General Numérico", f"{promedio_general * 100:.2f}%")
+
+            if promedio_final is not None and not pd.isna(promedio_final):
+                st.metric("Promedio 'puntaje_final_%'", f"{promedio_final:.2f}%")
+            else:
+                st.write("❌ 'puntaje_final_%' no se puede calcular o no existe.")
+
+        # Columna 2
         with col2:
             for col_name in columnas_numericas[items_per_col:items_per_col*2]:
                 promedio = df[col_name].mean()
                 st.metric(label=col_name, value=f"{promedio:.2f}")
 
+        # Columna 3
         with col3:
             for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
                 promedio = df[col_name].mean()
                 st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
 
+        # Columna 4
         with col4:
             for col_name in columnas_numericas[items_per_col*3:]:
                 promedio = df[col_name].mean()
@@ -200,7 +196,6 @@ def cargar_y_mostrar_promedios(df):
 
     else:
         st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
-
 def display_summary_metrics(df_puntaje, df_sentimiento):
     st.markdown("## 📋 Resumen General de Métricas")
 
