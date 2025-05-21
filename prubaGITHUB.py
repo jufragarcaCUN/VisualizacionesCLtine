@@ -127,16 +127,8 @@ except Exception as e:
 
 
 # ---
-import streamlit as st
-import pandas as pd
 
-# Simulación de un DataFrame de ejemplo (puedes omitir esta parte si ya tienes df_resumen cargado)
-# df_resumen = pd.DataFrame({
-#     'puntaje_total': [0.7, 0.8, 0.9]
-# })
-
-# Asegura que df_resumen existe y tiene la columna puntaje_total
-if 'df_resumen' in locals() and 'puntaje_total' in df_resumen.columns:
+if 'df_acordeon' in locals() and 'puntaje_total' in df_resumen.columns:
     promedio_puntaje = df_resumen['puntaje_total'].mean()
 else:
     promedio_puntaje = 0.0
