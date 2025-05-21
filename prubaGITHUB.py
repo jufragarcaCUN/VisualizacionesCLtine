@@ -128,20 +128,20 @@ except Exception as e:
 
 # ---
 
-def display_summary_metrics(resultados_llamadas_directo, df_sentimiento):
+def display_summary_metrics(df_puntajeAsesores, df_sentimiento):
     st.markdown("## 📋 Resumen General de Métricas")
 
     col1, col2, col3, col4 = st.columns(4)
 
-    if resultados_llamadas_directo is not None and not resultados_llamadas_directo.empty:
-        if 'puntaje_final_%' in resultados_llamadas_directo.columns:
-            promedio_puntaje = resultados_llamadas_directo['puntaje_final_%'].mean()
+    if df_puntajeAsesores is not None and not df_puntajeAsesores.empty:
+        if 'puntaje_total' in df_puntajeAsesores.columns:
+            promedio_puntaje = df_puntajeAsesores['puntaje_total'].mean()
         else:
             promedio_puntaje = 0.0
-            st.warning("⚠️ La columna 'puntaje_final_%' no se encuentra en el DataFrame.")
+            st.warning("⚠️ La columna 'puntaje_total' no se encuentra en el DataFrame.")
     else:
         promedio_puntaje = 0.0
-        st.warning("⚠️ El DataFrame 'resultados_llamadas_directo' está vacío o no existe.")
+        st.warning("⚠️ El DataFrame 'df_puntajeAsesores' está vacío o no existe.")
 
     conf_col = "confidence" if "confidence" in df_sentimiento.columns else "confianza"
     avg_confianza = df_sentimiento[conf_col].mean() if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
@@ -149,8 +149,7 @@ def display_summary_metrics(resultados_llamadas_directo, df_sentimiento):
     avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
 
     with col1:
-        
-        st.metric("Promedio Puntaje Total", f"{promedio_puntaje * 100:.2f}%")
+        st.metric("Promedio Puntaje Total", f"{promedio_puntaje:.2f}")  # no multiplico por 100 porque parece ya es porcentaje
 
     with col2:
         st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
@@ -158,8 +157,6 @@ def display_summary_metrics(resultados_llamadas_directo, df_sentimiento):
         st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
     with col4:
         st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
-
-
 # ---
 
 def graficar_puntaje_total(df):
