@@ -195,7 +195,7 @@ def display_summary_metrics(df_puntaje, df_sentimiento):
     avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
 
     with col1:
-        wite("gonorrea")
+        st.wite("gonorrea")
     with col2:
         st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
     with col3:
