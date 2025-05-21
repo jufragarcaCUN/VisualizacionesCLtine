@@ -160,7 +160,7 @@ def calcular_promedio_total_numerico(df):
     return 0.0
 
 
-def cargar_y_mostrar_promedios(df):
+def cargar_y_mostrar_promedios(df_resumen):
     if df is not None and not df.empty:
         st.markdown("## 📊 Promedio por Columna Numérica")
 
