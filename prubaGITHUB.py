@@ -129,19 +129,12 @@ except Exception as e:
     print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}")
     resultados_llamadas_directo = pd.DataFrame()
 
+import streamlit as st
+
 def calcular_promedio_total_numerico(df):
-    if df is not None and not df.empty:
-        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        if not columnas_numericas:
-            resultado = 0.0
-            print(f"DEBUG: calcular_promedio_total_numerico devuelve (no numéricas): {resultado}")
-            return resultado
-
-        promedios_individuales = [df[col].mean() for col in columnas_numericas]
-
-        resultado = sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
-        print(f"DEBUG: calcular_promedio_total_numerico devuelve (calculado): {resultado}")
-        return resultado
+    st.write("Hola") # Esto imprimirá solo "Hola" en tu aplicación Streamlit
+    return # <--- Si hay un 'return' aquí, la función termina inmediatamente.
+           # Todo el código de cálculo (if df is not None..., etc.) NUNCA se ejecutará.
 
     resultado = 0.0
     print(f"DEBUG: calcular_promedio_total_numerico devuelve (df None o vacío): {resultado}")
@@ -160,8 +153,8 @@ def cargar_y_mostrar_promedios(df):
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            promedio_general_calculado = calcular_promedio_total_numerico(df)
-            st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
+            #promedio_general_calculado = calcular_promedio_total_numerico(df)
+            #st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
 
         with col2:
             for col_name in columnas_numericas[items_per_col:items_per_col*2]:
@@ -478,7 +471,8 @@ def mostrar_acordeones(df):
 
 def main():
     insetCodigo()
-    calcular_promedio_total_numerico(df_resumen)
+    st.header("📈 Gráficos Resumen")
+    calcular_promedio_total_numerico()
     display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
     
     st.markdown("---")
