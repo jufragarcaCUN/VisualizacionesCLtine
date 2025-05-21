@@ -142,47 +142,94 @@ def calcular_promedio_puntaje_total(df):
     return 0.0
 
 
-# Ejemplo de uso en Streamlit
-def mostrar_promedio_general(df):
-    promedio = calcular_promedio_total_numerico(df)
-    st.write(f"Promedio general: {promedio:.2f}")
+def calcular_promedio_puntaje_total(df):
+    """
+    Calcula el promedio del 'puntaje_total' de un DataFrame.
+    Retorna 0.0 si el DataFrame está vacío, no tiene la columna
+    o no hay valores numéricos válidos.
+    """
+    if df is not None and not df.empty and 'puntaje_total' in df.columns:
+        puntaje = pd.to_numeric(df['puntaje_total'], errors='coerce').dropna()
+        if not puntaje.empty:
+            return puntaje.mean()
+    return 0.0
 
+def calcular_promedio_confianza(df_sentimiento):
+    """
+    Calcula la confianza promedio de un DataFrame de sentimientos.
+    Busca las columnas 'confidence' o 'confianza'.
+    """
+    conf_col = None
+    if "confidence" in df_sentimiento.columns:
+        conf_col = "confidence"
+    elif "confianza" in df_sentimiento.columns:
+        conf_col = "confianza"
 
+    if df_sentimiento is not None and not df_sentimiento.empty and conf_col:
+        confianza = pd.to_numeric(df_sentimiento[conf_col], errors='coerce').dropna()
+        if not confianza.empty:
+            return confianza.mean()
+    return 0.0
 
+def calcular_promedio_polaridad(df_sentimiento):
+    """
+    Calcula la polaridad promedio de un DataFrame de sentimientos.
+    """
+    if df_sentimiento is not None and not df_sentimiento.empty and 'polarity' in df_sentimiento.columns:
+        polarity = pd.to_numeric(df_sentimiento['polarity'], errors='coerce').dropna()
+        if not polarity.empty:
+            return polarity.mean()
+    return 0.0
 
-
-
+def calcular_promedio_subjetividad(df_sentimiento):
+    """
+    Calcula la subjetividad promedio de un DataFrame de sentimientos.
+    """
+    if df_sentimiento is not None and not df_sentimiento.empty and 'subjectivity' in df_sentimiento.columns:
+        subjectivity = pd.to_numeric(df_sentimiento['subjectivity'], errors='coerce').dropna()
+        if not subjectivity.empty:
+            return subjectivity.mean()
+    return 0.5 # Valor por defecto si no hay datos o la columna no existe
 
 def display_summary_metrics(df_puntaje, df_sentimiento):
+    """
+    Muestra las métricas resumen generales en columnas de Streamlit.
+    """
     st.markdown("## 📋 Resumen General de Métricas")
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # 🧠 Aquí calculamos el promedio con tu función
-    promedio_general = calcular_promedio_total_numerico(df_puntaje)
-
-    conf_col = "confidence" if "confidence" in df_sentimiento.columns else "confianza"
-    avg_confianza = df_sentimiento[conf_col].mean() if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
-    
-    avg_polarity = df_sentimiento["polarity"].mean() if "polarity" in df_sentimiento.columns and not df_sentimiento.empty else 0
-    avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
-
+    # Columna 1: Promedio General Numérico
     with col1:
-        st.write("gonorrea")  # Esto imprime la palabra "gonorrea"
-        promedio_general = calcular_promedio_total_numerico(df_puntaje)  # Esto CALCULA el promedio
-        st.metric("Promedio General Numérico", f"{promedio_general * 100:.2f}%")  # Esto IMPRIME el promedio
+        promedio_general = calcular_promedio_puntaje_total(df_puntaje) # Usando la función correcta
+        st.metric("Promedio General Puntuación", f"{promedio_general * 100:.2f}%")
 
-
-
+    # Columna 2: Confianza Promedio
     with col2:
+        avg_confianza = calcular_promedio_confianza(df_sentimiento)
         st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
+
+    # Columna 3: Polaridad Promedio
     with col3:
+        avg_polarity = calcular_promedio_polaridad(df_sentimiento)
         st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
+
+    # Columna 4: Subjetividad Promedio
     with col4:
-        st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
+        avg_subjectivity = calcular_promedio_subjetividad(df_sentimiento)
+        st.metric("Subjetividad Promedio", f"{avg_subjectivity:.2f}")
 
+# Asegúrate de eliminar o comentar la función `mostrar_promedio_general`
+# si ya no la necesitas, para evitar duplicidades o confusión.
+# def mostrar_promedio_general(df):
+#     promedio = calcular_promedio_total_numerico(df) # Asumo que esta función ya no existe o se renombró
+#     st.write(f"Promedio general: {promedio:.2f}")
 
-
+# Y en tu función main(), la llamada debería ser la misma:
+# main():
+#     # ...
+#     display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
+#     # ...
 
 
 
