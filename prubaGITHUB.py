@@ -120,48 +120,16 @@ except Exception as e:
 
 try:
     resultados_llamadas_directo = pd.read_excel(ruta_archivo_reporte_puntaje)
-    # print(f"Archivo {ruta_archivo_reporte_puntaje.name} importado correctamente.") 
 except FileNotFoundError:
-    # print(f"No se encontró el archivo: {ruta_archivo_reporte_puntaje}") 
     resultados_llamadas_directo = pd.DataFrame()
 except Exception as e:
-    # print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}") 
     resultados_llamadas_directo = pd.DataFrame()
 
-# ---
-# Función para mostrar las métricas resumen
-def display_summary_metrics(df_puntaje, df_sentimiento):
-    st.markdown("## 📋 Resumen General de Métricas")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    # Aseguramos que 'puntaje_promedio' exista y sea numérico, o calculamos un promedio general si 'puntaje_total' está disponible
-    avg_puntaje = 0
-    if "puntaje_promedio" in df_puntaje.columns and not df_puntaje.empty:
-        avg_puntaje = df_puntaje["puntaje_promedio"].mean()
-    elif "puntaje_total" in df_puntaje.columns and not df_puntaje.empty:
-        # Si no hay 'puntaje_promedio', calculamos con 'puntaje_total' si es numérico
-        df_puntaje['puntaje_total'] = pd.to_numeric(df_puntaje['puntaje_total'], errors='coerce')
-        avg_puntaje = df_puntaje['puntaje_total'].mean() / 100 if df_puntaje['puntaje_total'].max() > 1 else df_puntaje['puntaje_total'].mean()
-
-    conf_col = "confidence" if "confidence" in df_sentimiento.columns else "confianza"
-    avg_confianza = df_sentimiento[conf_col].mean() if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
-    
-    avg_polarity = df_sentimiento["polarity"].mean() if "polarity" in df_sentimiento.columns and not df_sentimiento.empty else 0
-    
-    avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
-
-    with col1:
-        st.metric("Puntaje Promedio", f"{avg_puntaje:.2%}")
-    with col2:
-        st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
-    with col3:
-        st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
-    with col4:
-        st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
 
 # ---
-# Resto de tus funciones
+# La función 'display_summary_metrics' y su llamada han sido eliminadas.
+# ---
+
 def graficar_puntaje_total(df):
     if df is None or df.empty or 'asesor' not in df.columns or 'puntaje_total' not in df.columns:
         st.warning("⚠️ Datos incompletos para la gráfica de puntaje total.")
@@ -198,7 +166,6 @@ def graficar_asesores_metricas_heatmap(df):
     metric_cols = [col for col in df.columns if '%' in col]
     if not metric_cols:
         st.warning("⚠️ No se encontraron columnas con '%' en el DataFrame para graficar el heatmap.")
-        # st.info(f"📋 Columnas disponibles: {df.columns.tolist()}") 
         return
     df['asesor'] = df['asesor'].apply(corregir_nombre)
     df_heatmap_data = df[['asesor'] + metric_cols].copy()
@@ -228,13 +195,11 @@ def graficar_polaridad_subjetividad_gauges(df):
         return
     if 'polarity' not in df.columns:
         st.error("❌ El DataFrame de Sentimientos no contiene la columna 'polarity' necesaria para el gauge de polaridad.")
-        # st.info(f"📋 Columnas disponibles: {df.columns.tolist()}") 
         has_polarity = False
     else:
         has_polarity = True
     if 'subjectivity' not in df.columns:
         st.warning("⚠️ El DataFrame de Sentimientos no contiene la columna 'subjectivity'. El gauge de subjetividad no se mostrará.")
-        # st.info(f"📋 Columnas disponibles: {df.columns.tolist()}") 
         has_subjectivity = False
     else:
         has_subjectivity = True
@@ -356,7 +321,6 @@ def graficar_polaridad_por_asesor_barras_horizontales(df):
         return
     if 'asesor' not in df.columns or 'polarity' not in df.columns:
         st.error("❌ El DataFrame no contiene las columnas necesarias: 'asesor' y 'polarity'.")
-        # st.info(f"📋 Columnas disponibles: {df.columns.tolist()}") 
         return
 
     df['asesor'] = df['asesor'].astype(str).apply(corregir_nombre_local)
@@ -437,8 +401,7 @@ def mostrar_acordeones(df):
 def main():
     insetCodigo()
     
-    # Aquí es donde se llama a la función display_summary_metrics
-    display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
+    # La llamada a display_summary_metrics(df_puntajeAsesores, df_POlaVssub) ha sido eliminada.
     
     st.markdown("---")
 
@@ -461,7 +424,6 @@ def main():
     st.markdown("---")
 
     mostrar_acordeones(df_acordeon)
-    #cargar_y_mostrar_promedios(df_POlaVssub) # ¡Esta línea ha sido eliminada!
 
 
 if __name__ == '__main__':
