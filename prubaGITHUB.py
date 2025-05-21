@@ -131,7 +131,7 @@ except Exception as e:
 
 def calcular_promedio_total_numerico(df):
     if df is not None and not df.empty:
-        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+         st.write("Columnas del DataFrame:", df.columns.tolist())
         if not columnas_numericas:
             return 0.0
 
@@ -145,7 +145,7 @@ def cargar_y_mostrar_promedios(df):
     if df is not None and not df.empty:
         st.markdown("## 📊 Promedio por Columna Numérica")
 
-        st.write("Columnas del DataFrame:", df.columns.tolist())
+       
 
         columnas_numericas = df.select_dtypes(include='number').columns.tolist()
         num_columns = len(columnas_numericas)
