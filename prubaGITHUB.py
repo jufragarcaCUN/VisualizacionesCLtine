@@ -434,7 +434,9 @@ def mostrar_acordeones(df):
 def main():
     insetCodigo()
     
-    # La llamada a display_summary_metrics(df_puntajeAsesores, df_POlaVssub) ha sido eliminada.
+    display_summary_metrics(df_resumen, df_POlaVssub)
+
+
     
     st.markdown("---")
 
