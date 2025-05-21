@@ -159,7 +159,7 @@ def display_summary_metrics(df_resumen, df_sentimiento):
         st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
     with col4:
         st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
-)
+
 
 # ---
 
