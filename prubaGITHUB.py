@@ -128,15 +128,15 @@ except Exception as e:
 
 # ---
 
-def display_summary_metrics(ruta_archivo_reporte_puntaje, df_sentimiento):
+def display_summary_metrics(resultados_llamadas_directo, df_sentimiento):
     st.markdown("## 📋 Resumen General de Métricas")
 
     col1, col2, col3, col4 = st.columns(4)
 
     # 🔍 Verificamos si df_resumen existe y tiene la columna 'puntaje_total'
     if df_resumen is not None and not df_resumen.empty:
-        if 'puntaje_total' in df_resumen.columns:
-            promedio_puntaje = df_resumen['puntaje_total'].mean()
+        if 'puntaje_final_%' in df_resumen.columns:
+            promedio_puntaje = df_resumen['puntaje_final_%'].mean()
         else:
             promedio_puntaje = 0.0
             st.warning("⚠️ La columna 'puntaje_total' no se encuentra en el DataFrame.")
@@ -434,7 +434,7 @@ def mostrar_acordeones(df):
 def main():
     insetCodigo()
     
-    display_summary_metrics(ruta_archivo_reporte_puntaje, df_POlaVssub)
+    display_summary_metrics(resultados_llamadas_directo, df_POlaVssub)
 
 
     
