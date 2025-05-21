@@ -132,14 +132,9 @@ except Exception as e:
 def calcular_promedio_total_numerico(df):
     if df is not None and not df.empty:
         st.write("Columnas del DataFrame:", df.columns.tolist())
-        if not columnas_numericas:
-            return 0.0
+    else:
+        st.write("El DataFrame está vacío o es None.")
 
-        promedios_individuales = [df[col].mean() for col in columnas_numericas]
-
-        return sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
-
-    return 0.0
 
 def cargar_y_mostrar_promedios(df):
     if df is not None and not df.empty:
