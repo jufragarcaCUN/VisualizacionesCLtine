@@ -160,9 +160,8 @@ def cargar_y_mostrar_promedios(df):
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            #promedio_general_calculado = calcular_promedio_total_numerico(df)
-            #st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
-            pass
+            st.write("gonorre")
+
         with col2:
             for col_name in columnas_numericas[items_per_col:items_per_col*2]:
                 promedio = df[col_name].mean()
