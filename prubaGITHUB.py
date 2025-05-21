@@ -129,20 +129,41 @@ except Exception as e:
     print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}")
     resultados_llamadas_directo = pd.DataFrame()
 
-def calcular_promedio_total_numerico(df):
+def cargar_y_mostrar_promedios(df):
     if df is not None and not df.empty:
+        st.markdown("## 📊 Promedio por Columna Numérica")
+
+        # --- AÑADE ESTA LÍNEA AQUÍ ---
+        st.write("Columnas del DataFrame:", df.columns.tolist())
+        # ---------------------------
+
         columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        if not columnas_numericas:
-            return 0.0 # No hay columnas numéricas para promediar
-        
-        # Calcular el promedio de los promedios de cada columna numérica,
-        # o simplemente el promedio de todos los valores numéricos.
-        # Aquí asumimos el promedio de los promedios.
-        promedios_individuales = [df[col].mean() for col in columnas_numericas]
-        
-        # Calcular el promedio de esos promedios
-        return sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
-    return 0.0
+        num_columns = len(columnas_numericas)
+        items_per_col = (num_columns + 3) // 4
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            promedio_general_calculado = calcular_promedio_total_numerico(df)
+            st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
+
+        with col2:
+            for col_name in columnas_numericas[items_per_col:items_per_col*2]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
+
+        with col3:
+            for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
+
+        with col4:
+            for col_name in columnas_numericas[items_per_col*3:]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
+
+    else:
+        st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
 
 def cargar_y_mostrar_promedios(df):
     if df is not None and not df.empty:
