@@ -132,8 +132,19 @@ except Exception as e:
 def calcular_promedio_total_numerico(df):
     if df is not None and not df.empty:
         st.write("Columnas del DataFrame:", df.columns.tolist())
+
+        if 'puntaje_total' in df.columns:
+            df['puntaje_total'] = pd.to_numeric(df['puntaje_total'], errors='coerce')
+            promedio = df['puntaje_total'].mean()
+            if pd.isna(promedio):
+                st.write("El promedio de 'puntaje_total' no pudo ser calculado (quizás todos son valores no numéricos).")
+            else:
+                st.write(f"Promedio de 'puntaje_total': {promedio:.2f}")
+        else:
+            st.write("La columna 'puntaje_total' no se encontró en el DataFrame.")
     else:
         st.write("El DataFrame está vacío o es None.")
+
 
 
 def cargar_y_mostrar_promedios(df):
