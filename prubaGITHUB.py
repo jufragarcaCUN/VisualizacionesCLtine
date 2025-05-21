@@ -128,7 +128,10 @@ except Exception as e:
     # print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}") 
     resultados_llamadas_directo = pd.DataFrame()
 
-
+# ---
+# Función para mostrar las métricas resumen
+def display_summary_metrics(df_puntaje, df_sentimiento):
+    st.markdown("## 📋 Resumen General de Métricas")
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -157,6 +160,8 @@ except Exception as e:
     with col4:
         st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
 
+# ---
+# Resto de tus funciones
 def graficar_puntaje_total(df):
     if df is None or df.empty or 'asesor' not in df.columns or 'puntaje_total' not in df.columns:
         st.warning("⚠️ Datos incompletos para la gráfica de puntaje total.")
@@ -432,7 +437,8 @@ def mostrar_acordeones(df):
 def main():
     insetCodigo()
     
-    #display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
+    # Aquí es donde se llama a la función display_summary_metrics
+    display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
     
     st.markdown("---")
 
@@ -460,4 +466,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
