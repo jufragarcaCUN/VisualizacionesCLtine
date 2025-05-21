@@ -478,7 +478,7 @@ def mostrar_acordeones(df):
 
 def main():
     insetCodigo()
-    
+    calcular_promedio_total_numerico(df_resumen)
     display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
     
     st.markdown("---")
