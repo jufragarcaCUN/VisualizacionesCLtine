@@ -128,7 +128,7 @@ except Exception as e:
 
 # ---
 
-def display_summary_metrics(df_resumen, df_sentimiento):
+def display_summary_metrics(ruta_archivo_reporte_puntaje =, df_sentimiento):
     st.markdown("## 📋 Resumen General de Métricas")
 
     col1, col2, col3, col4 = st.columns(4)
@@ -434,7 +434,7 @@ def mostrar_acordeones(df):
 def main():
     insetCodigo()
     
-    display_summary_metrics(df_resumen, df_POlaVssub)
+    display_summary_metrics(ruta_archivo_reporte_puntaje =, df_POlaVssub)
 
 
     
