@@ -128,28 +128,38 @@ except Exception as e:
 
 # ---
 
-if 'df_acordeon' in locals() and 'puntaje_total' in df_resumen.columns:
-    promedio_puntaje = df_resumen['puntaje_total'].mean()
-else:
-    promedio_puntaje = 0.0
+def display_summary_metrics(df_resumen, df_sentimiento):
+    st.markdown("## 📋 Resumen General de Métricas")
 
-# Crear columnas
-col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4 = st.columns(4)
 
-# Mostrar el promedio en el primer bloque
-with col1:
-    st.write("gonorrea")  # Lo que tú pediste conservar
-    st.metric("Promedio puntaje_total", f"{promedio_puntaje * 100:.2f}%")
+    # 🔍 Verificamos si df_resumen existe y tiene la columna 'puntaje_total'
+    if df_resumen is not None and not df_resumen.empty:
+        if 'puntaje_total' in df_resumen.columns:
+            promedio_puntaje = df_resumen['puntaje_total'].mean()
+        else:
+            promedio_puntaje = 0.0
+            st.warning("⚠️ La columna 'puntaje_total' no se encuentra en el DataFrame.")
+    else:
+        promedio_puntaje = 0.0
+        st.warning("⚠️ El DataFrame 'df_resumen' está vacío o no existe.")
 
-# Solo para completar estructura
-with col2:
-    st.write("hola")
+    conf_col = "confidence" if "confidence" in df_sentimiento.columns else "confianza"
+    avg_confianza = df_sentimiento[conf_col].mean() if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
+    avg_polarity = df_sentimiento["polarity"].mean() if "polarity" in df_sentimiento.columns and not df_sentimiento.empty else 0
+    avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
 
-with col3:
-    st.write("hola")
+    with col1:
+        st.write("gonorrea")  # Texto solicitado
+        st.metric("Promedio Puntaje Total", f"{promedio_puntaje * 100:.2f}%")
 
-with col4:
-    st.write("hola")
+    with col2:
+        st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
+    with col3:
+        st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
+    with col4:
+        st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
+)
 
 # ---
 
