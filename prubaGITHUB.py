@@ -133,13 +133,19 @@ def calcular_promedio_total_numerico(df):
     if df is not None and not df.empty:
         columnas_numericas = df.select_dtypes(include='number').columns.tolist()
         if not columnas_numericas:
-            return 0.0
+            resultado = 0.0
+            print(f"DEBUG: calcular_promedio_total_numerico devuelve (no numéricas): {resultado}")
+            return resultado
 
         promedios_individuales = [df[col].mean() for col in columnas_numericas]
 
-        return sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
+        resultado = sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
+        print(f"DEBUG: calcular_promedio_total_numerico devuelve (calculado): {resultado}")
+        return resultado
 
-    return 0.0
+    resultado = 0.0
+    print(f"DEBUG: calcular_promedio_total_numerico devuelve (df None o vacío): {resultado}")
+    return resultado
 
 def cargar_y_mostrar_promedios(df):
     if df is not None and not df.empty:
