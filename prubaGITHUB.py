@@ -432,7 +432,7 @@ def mostrar_acordeones(df):
 def main():
     insetCodigo()
     
-    display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
+    #display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
     
     st.markdown("---")
 
