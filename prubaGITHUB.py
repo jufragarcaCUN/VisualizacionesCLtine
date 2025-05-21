@@ -497,7 +497,7 @@ def main():
 
     mostrar_acordeones(df_acordeon)
     cargar_y_mostrar_promedios(df_resumen)
-    calcular_promedio_total_numerico(df_resumen)
+    calcular_promedio_total_numerico(resultados_llamadas_directo)
 
 
 if __name__ == '__main__':
