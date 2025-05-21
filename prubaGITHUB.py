@@ -133,9 +133,27 @@ import streamlit as st
 
 import streamlit as st # Asegúrate de que streamlit esté importado en tu script principal
 
+import streamlit as st
+import pandas as pd # Asegúrate de que pandas esté importado
+
 def calcular_promedio_total_numerico(df):
-    st.write("Hola") 
+    st.write("Hola")
     st.write("Columnas del DataFrame recibido:", df.columns.tolist())
+
+    # --- Calcular y mostrar el promedio de 'puntaje_final_%' ---
+    if 'puntaje_final_%' in df.columns:
+        # Convertir a numérico, forzando errores a NaN
+        df['puntaje_final_%'] = pd.to_numeric(df['puntaje_final_%'], errors='coerce')
+        # Calcular el promedio ignorando NaN
+        promedio_puntaje_final = df['puntaje_final_%'].mean()
+        
+        if pd.isna(promedio_puntaje_final):
+            st.write("El promedio de 'puntaje_final_%' no pudo ser calculado (quizás todos son valores no numéricos).")
+        else:
+            st.write(f"Promedio de 'puntaje_final_%': {promedio_puntaje_final:.2f}%")
+    else:
+        st.write("La columna 'puntaje_final_%' no se encontró en el DataFrame.")
+    # -----------------------------------------------------------
 
     if df is not None and not df.empty:
         columnas_numericas = df.select_dtypes(include='number').columns.tolist()
