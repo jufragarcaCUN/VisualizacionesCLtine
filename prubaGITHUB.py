@@ -434,7 +434,7 @@ def mostrar_acordeones(df):
 def main():
     insetCodigo()
     
-    display_summary_metrics(ruta_archivo_reporte_puntaje =, df_POlaVssub)
+    display_summary_metrics(ruta_archivo_reporte_puntaje, df_POlaVssub)
 
 
     
