@@ -143,58 +143,32 @@ def calcular_promedio_total_numerico(df):
 
 
 
-def cargar_y_mostrar_promedios(df):
-    if df is not None and not df.empty:
-        st.markdown("## 📊 Promedio por Columna Numérica")
-
-        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        num_columns = len(columnas_numericas)
-        items_per_col = (num_columns + 3) // 4
-
-        col1, col2, col3, col4 = st.columns(4)
-
-        with col1:
-            promedio_general = calcular_promedio_total_numerico(df)
-            st.metric(label="Promedio General Numérico", value=f"{promedio_general * 100:.2f}%")
-
-        with col2:
-            for col_name in columnas_numericas[items_per_col:items_per_col*2]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
-
-        with col3:
-            for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
-
-        with col4:
-            for col_name in columnas_numericas[items_per_col*3:]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
-    else:
-        st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
 def display_summary_metrics(df_puntaje, df_sentimiento):
     st.markdown("## 📋 Resumen General de Métricas")
 
     col1, col2, col3, col4 = st.columns(4)
 
-    avg_puntaje = df_puntaje["puntaje_promedio"].mean() if "puntaje_promedio" in df_puntaje.columns and not df_puntaje.empty else 0
+    # 🧠 Aquí calculamos el promedio con tu función
+    promedio_general = calcular_promedio_total_numerico(df_puntaje)
 
     conf_col = "confidence" if "confidence" in df_sentimiento.columns else "confianza"
     avg_confianza = df_sentimiento[conf_col].mean() if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
     
     avg_polarity = df_sentimiento["polarity"].mean() if "polarity" in df_sentimiento.columns and not df_sentimiento.empty else 0
-    
     avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
 
     with col1:
-        st.write("gonorrea")
+        st.write("gonorrea")  # Aquí imprimimos tu palabra
+        # Aquí se imprime el promedio que viene de la función calcular_promedio_total_numerico
+        st.metric("Promedio General Numérico", f"{promedio_general * 100:.2f}%")
+
     with col2:
         st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
     with col3:
         st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
     with col4:
         st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
+
 
 
 
