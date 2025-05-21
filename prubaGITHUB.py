@@ -13,7 +13,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
-from tabulate import tabulate
+# from tabulate import tabulate # No es necesario si no se usa para imprimir en consola
 
 st.set_page_config(layout="wide")
 
@@ -120,27 +120,14 @@ except Exception as e:
 
 try:
     resultados_llamadas_directo = pd.read_excel(ruta_archivo_reporte_puntaje)
-    print(f"Archivo {ruta_archivo_reporte_puntaje.name} importado correctamente.")
-    #print(tabulate(resultados_llamadas_directo.head(), headers='keys', tablefmt='psql'))
+    # print(f"Archivo {ruta_archivo_reporte_puntaje.name} importado correctamente.") # Eliminado
+    # print(tabulate(resultados_llamadas_directo.head(), headers='keys', tablefmt='psql')) # Eliminado
 except FileNotFoundError:
-    print(f"No se encontró el archivo: {ruta_archivo_reporte_puntaje}")
+    # print(f"No se encontró el archivo: {ruta_archivo_reporte_puntaje}") # Eliminado
     resultados_llamadas_directo = pd.DataFrame()
 except Exception as e:
-    print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}")
+    # print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}") # Eliminado
     resultados_llamadas_directo = pd.DataFrame()
-
-def calcular_promedio_puntaje_total(df):
-    if df is not None and not df.empty:
-        if 'puntaje_total' in df.columns:
-            # Convertir a numérico por si acaso y eliminar NaNs
-            puntaje = pd.to_numeric(df['puntaje_total'], errors='coerce').dropna()
-            if len(puntaje) == 0:
-                return 0.0
-            return puntaje.mean()
-        else:
-            return 0.0
-    return 0.0
-
 
 def calcular_promedio_puntaje_total(df):
     """
@@ -160,12 +147,13 @@ def calcular_promedio_confianza(df_sentimiento):
     Busca las columnas 'confidence' o 'confianza'.
     """
     conf_col = None
-    if "confidence" in df_sentimiento.columns:
-        conf_col = "confidence"
-    elif "confianza" in df_sentimiento.columns:
-        conf_col = "confianza"
+    if df_sentimiento is not None and not df_sentimiento.empty:
+        if "confidence" in df_sentimiento.columns:
+            conf_col = "confidence"
+        elif "confianza" in df_sentimiento.columns:
+            conf_col = "confianza"
 
-    if df_sentimiento is not None and not df_sentimiento.empty and conf_col:
+    if conf_col:
         confianza = pd.to_numeric(df_sentimiento[conf_col], errors='coerce').dropna()
         if not confianza.empty:
             return confianza.mean()
@@ -201,7 +189,7 @@ def display_summary_metrics(df_puntaje, df_sentimiento):
 
     # Columna 1: Promedio General Numérico
     with col1:
-        promedio_general = calcular_promedio_puntaje_total(df_puntaje) # Usando la función correcta
+        promedio_general = calcular_promedio_puntaje_total(df_puntaje)
         st.metric("Promedio General Puntuación", f"{promedio_general * 100:.2f}%")
 
     # Columna 2: Confianza Promedio
@@ -218,32 +206,6 @@ def display_summary_metrics(df_puntaje, df_sentimiento):
     with col4:
         avg_subjectivity = calcular_promedio_subjetividad(df_sentimiento)
         st.metric("Subjetividad Promedio", f"{avg_subjectivity:.2f}")
-
-# Asegúrate de eliminar o comentar la función `mostrar_promedio_general`
-# si ya no la necesitas, para evitar duplicidades o confusión.
-# def mostrar_promedio_general(df):
-#     promedio = calcular_promedio_total_numerico(df) # Asumo que esta función ya no existe o se renombró
-#     st.write(f"Promedio general: {promedio:.2f}")
-
-# Y en tu función main(), la llamada debería ser la misma:
-# main():
-#     # ...
-#     display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
-#     # ...
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def graficar_puntaje_total(df):
@@ -520,9 +482,9 @@ def mostrar_acordeones(df):
 
 def main():
     insetCodigo()
-    
+
     display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
-    
+
     st.markdown("---")
 
     st.header("📈 Gráficos Resumen")
@@ -544,8 +506,10 @@ def main():
     st.markdown("---")
 
     mostrar_acordeones(df_acordeon)
-    cargar_y_mostrar_promedios(df_resumen)
-    calcular_promedio_total_numerico( df_puntajeAsesores)
+    # Las siguientes líneas generarán un error si las funciones no están definidas.
+    # Si las necesitas, por favor, define cargar_y_mostrar_promedios y calcular_promedio_total_numerico.
+    # cargar_y_mostrar_promedios(df_resumen)
+    # calcular_promedio_total_numerico(df_puntajeAsesores)
 
 
 if __name__ == '__main__':
