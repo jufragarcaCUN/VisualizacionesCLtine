@@ -129,52 +129,32 @@ except Exception as e:
     print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}")
     resultados_llamadas_directo = pd.DataFrame()
 
-def calcular_promedio_total_numerico(df):
-    if df is not None and not df.empty:
-        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        if not columnas_numericas:
-            return 0.0
+def calcular_promedios_numericos(df):
+    promedio_puntaje_final = None
+    if 'puntaje_final_%' in df.columns:
+        df['puntaje_final_%'] = pd.to_numeric(df['puntaje_final_%'], errors='coerce')
+        promedio_puntaje_final = df['puntaje_final_%'].mean()
 
-        promedios_individuales = [df[col].mean() for col in columnas_numericas]
+    columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+    promedios_individuales = [df[col].mean() for col in columnas_numericas]
 
-        return sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
+    promedio_general = sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
 
-    return 0.0
+    return promedio_general, promedio_puntaje_final, columnas_numericas
 
-def cargar_y_mostrar_promedios(df):
-    if df is not None and not df.empty:
-        st.markdown("## 📊 Promedio por Columna Numérica")
 
-        st.write("Columnas del DataFrame:", df.columns.tolist())
+def calcular_promedios_numericos(df):
+    promedio_puntaje_final = None
+    if 'puntaje_final_%' in df.columns:
+        df['puntaje_final_%'] = pd.to_numeric(df['puntaje_final_%'], errors='coerce')
+        promedio_puntaje_final = df['puntaje_final_%'].mean()
 
-        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        num_columns = len(columnas_numericas)
-        items_per_col = (num_columns + 3) // 4
+    columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+    promedios_individuales = [df[col].mean() for col in columnas_numericas]
 
-        col1, col2, col3, col4 = st.columns(4)
+    promedio_general = sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
 
-        with col1:
-            promedio_general_calculado = calcular_promedio_total_numerico(df)
-            st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
-
-        with col2:
-            for col_name in columnas_numericas[items_per_col:items_per_col*2]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio:.2f}")
-
-        with col3:
-            for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
-
-        with col4:
-            for col_name in columnas_numericas[items_per_col*3:]:
-                promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
-
-    else:
-        st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
-
+    return promedio_general, promedio_puntaje_final, columnas_numericas
 def display_summary_metrics(df_puntaje, df_sentimiento):
     st.markdown("## 📋 Resumen General de Métricas")
 
