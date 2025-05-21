@@ -13,7 +13,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
-# from tabulate import tabulate # No es necesario si no se usa para imprimir en consola
+from tabulate import tabulate
 
 st.set_page_config(layout="wide")
 
@@ -120,93 +120,83 @@ except Exception as e:
 
 try:
     resultados_llamadas_directo = pd.read_excel(ruta_archivo_reporte_puntaje)
-    # print(f"Archivo {ruta_archivo_reporte_puntaje.name} importado correctamente.") # Eliminado
-    # print(tabulate(resultados_llamadas_directo.head(), headers='keys', tablefmt='psql')) # Eliminado
+    print(f"Archivo {ruta_archivo_reporte_puntaje.name} importado correctamente.")
+    print(tabulate(resultados_llamadas_directo.head(), headers='keys', tablefmt='psql'))
 except FileNotFoundError:
-    # print(f"No se encontró el archivo: {ruta_archivo_reporte_puntaje}") # Eliminado
+    print(f"No se encontró el archivo: {ruta_archivo_reporte_puntaje}")
     resultados_llamadas_directo = pd.DataFrame()
 except Exception as e:
-    # print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}") # Eliminado
+    print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}")
     resultados_llamadas_directo = pd.DataFrame()
 
-def calcular_promedio_puntaje_total(df):
-    """
-    Calcula el promedio del 'puntaje_total' de un DataFrame.
-    Retorna 0.0 si el DataFrame está vacío, no tiene la columna
-    o no hay valores numéricos válidos.
-    """
-    if df is not None and not df.empty and 'puntaje_total' in df.columns:
-        puntaje = pd.to_numeric(df['puntaje_total'], errors='coerce').dropna()
-        if not puntaje.empty:
-            return puntaje.mean()
+def calcular_promedio_total_numerico(df):
+    if df is not None and not df.empty:
+        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+        if not columnas_numericas:
+            return 0.0
+
+        promedios_individuales = [df[col].mean() for col in columnas_numericas]
+
+        return sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
+
     return 0.0
 
-def calcular_promedio_confianza(df_sentimiento):
-    """
-    Calcula la confianza promedio de un DataFrame de sentimientos.
-    Busca las columnas 'confidence' o 'confianza'.
-    """
-    conf_col = None
-    if df_sentimiento is not None and not df_sentimiento.empty:
-        if "confidence" in df_sentimiento.columns:
-            conf_col = "confidence"
-        elif "confianza" in df_sentimiento.columns:
-            conf_col = "confianza"
+def cargar_y_mostrar_promedios(df):
+    if df is not None and not df.empty:
+        st.markdown("## 📊 Promedio por Columna Numérica")
 
-    if conf_col:
-        confianza = pd.to_numeric(df_sentimiento[conf_col], errors='coerce').dropna()
-        if not confianza.empty:
-            return confianza.mean()
-    return 0.0
+        st.write("Columnas del DataFrame:", df.columns.tolist())
 
-def calcular_promedio_polaridad(df_sentimiento):
-    """
-    Calcula la polaridad promedio de un DataFrame de sentimientos.
-    """
-    if df_sentimiento is not None and not df_sentimiento.empty and 'polarity' in df_sentimiento.columns:
-        polarity = pd.to_numeric(df_sentimiento['polarity'], errors='coerce').dropna()
-        if not polarity.empty:
-            return polarity.mean()
-    return 0.0
+        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+        num_columns = len(columnas_numericas)
+        items_per_col = (num_columns + 3) // 4
 
-def calcular_promedio_subjetividad(df_sentimiento):
-    """
-    Calcula la subjetividad promedio de un DataFrame de sentimientos.
-    """
-    if df_sentimiento is not None and not df_sentimiento.empty and 'subjectivity' in df_sentimiento.columns:
-        subjectivity = pd.to_numeric(df_sentimiento['subjectivity'], errors='coerce').dropna()
-        if not subjectivity.empty:
-            return subjectivity.mean()
-    return 0.5 # Valor por defecto si no hay datos o la columna no existe
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            promedio_general_calculado = calcular_promedio_total_numerico(df)
+            st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
+
+        with col2:
+            for col_name in columnas_numericas[items_per_col:items_per_col*2]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
+
+        with col3:
+            for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
+
+        with col4:
+            for col_name in columnas_numericas[items_per_col*3:]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
+
+    else:
+        st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
 
 def display_summary_metrics(df_puntaje, df_sentimiento):
-    """
-    Muestra las métricas resumen generales en columnas de Streamlit.
-    """
     st.markdown("## 📋 Resumen General de Métricas")
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # Columna 1: Promedio General Numérico
+    avg_puntaje = df_puntaje["puntaje_promedio"].mean() if "puntaje_promedio" in df_puntaje.columns and not df_puntaje.empty else 0
+
+    conf_col = "confidence" if "confidence" in df_sentimiento.columns else "confianza"
+    avg_confianza = df_sentimiento[conf_col].mean() if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
+    
+    avg_polarity = df_sentimiento["polarity"].mean() if "polarity" in df_sentimiento.columns and not df_sentimiento.empty else 0
+    
+    avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
+
     with col1:
-        promedio_general = calcular_promedio_puntaje_total(df_puntaje)
-        st.metric("Promedio General Puntuación", f"{promedio_general * 100:.2f}%")
-
-    # Columna 2: Confianza Promedio
+        st.metric("Puntaje Promedio", f"{avg_puntaje:.2%}")
     with col2:
-        avg_confianza = calcular_promedio_confianza(df_sentimiento)
         st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
-
-    # Columna 3: Polaridad Promedio
     with col3:
-        avg_polarity = calcular_promedio_polaridad(df_sentimiento)
         st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
-
-    # Columna 4: Subjetividad Promedio
     with col4:
-        avg_subjectivity = calcular_promedio_subjetividad(df_sentimiento)
-        st.metric("Subjetividad Promedio", f"{avg_subjectivity:.2f}")
-
+        st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
 
 def graficar_puntaje_total(df):
     if df is None or df.empty or 'asesor' not in df.columns or 'puntaje_total' not in df.columns:
@@ -482,9 +472,9 @@ def mostrar_acordeones(df):
 
 def main():
     insetCodigo()
-
+    
     display_summary_metrics(df_puntajeAsesores, df_POlaVssub)
-
+    
     st.markdown("---")
 
     st.header("📈 Gráficos Resumen")
@@ -506,10 +496,7 @@ def main():
     st.markdown("---")
 
     mostrar_acordeones(df_acordeon)
-    # Las siguientes líneas generarán un error si las funciones no están definidas.
-    # Si las necesitas, por favor, define cargar_y_mostrar_promedios y calcular_promedio_total_numerico.
-    # cargar_y_mostrar_promedios(df_resumen)
-    # calcular_promedio_total_numerico(df_puntajeAsesores)
+    cargar_y_mostrar_promedios(df_POlaVssub)
 
 
 if __name__ == '__main__':
