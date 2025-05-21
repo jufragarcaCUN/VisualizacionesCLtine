@@ -150,7 +150,7 @@ def display_summary_metrics(df_resumen, df_sentimiento):
     avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
 
     with col1:
-        st.write("gonorrea")  # Texto solicitado
+        
         st.metric("Promedio Puntaje Total", f"{promedio_puntaje * 100:.2f}%")
 
     with col2:
