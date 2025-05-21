@@ -135,7 +135,7 @@ def display_summary_metrics(df_puntajeAsesores, df_sentimiento):
 
     if df_puntajeAsesores is not None and not df_puntajeAsesores.empty:
         if 'puntaje_total' in df_puntajeAsesores.columns:
-            promedio_puntaje = df_puntajeAsesores['puntaje_total'].mean()
+            promedio_puntaje = df_puntajeAsesores['puntaje_total'].mean() / 100  # paso de 0-100 a decimal
         else:
             promedio_puntaje = 0.0
             st.warning("⚠️ La columna 'puntaje_total' no se encuentra en el DataFrame.")
@@ -144,19 +144,21 @@ def display_summary_metrics(df_puntajeAsesores, df_sentimiento):
         st.warning("⚠️ El DataFrame 'df_puntajeAsesores' está vacío o no existe.")
 
     conf_col = "confidence" if "confidence" in df_sentimiento.columns else "confianza"
-    avg_confianza = df_sentimiento[conf_col].mean() if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
-    avg_polarity = df_sentimiento["polarity"].mean() if "polarity" in df_sentimiento.columns and not df_sentimiento.empty else 0
-    avg_subjectivity = df_sentimiento["subjectivity"].mean() if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
+    avg_confianza = df_sentimiento[conf_col].mean() / 100 if conf_col in df_sentimiento.columns and not df_sentimiento.empty else 0
+    avg_polarity = df_sentimiento["polarity"].mean() / 100 if "polarity" in df_sentimiento.columns and not df_sentimiento.empty else 0
+    avg_subjectivity = df_sentimiento["subjectivity"].mean() / 100 if "subjectivity" in df_sentimiento.columns and not df_sentimiento.empty else 0
 
     with col1:
-        st.metric("Promedio Puntaje Total", f"{promedio_puntaje:.2f}")  # no multiplico por 100 porque parece ya es porcentaje
+        st.metric("Promedio Puntaje Total", f"{promedio_puntaje:.2%}")
 
     with col2:
         st.metric("Confianza Promedio", f"{avg_confianza:.2%}")
+
     with col3:
-        st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
+        st.metric("Polaridad Promedio", f"{avg_polarity:.2%}")
+
     with col4:
-        st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
+        st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2%}")
 # ---
 
 def graficar_puntaje_total(df):
