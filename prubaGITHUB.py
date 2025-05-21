@@ -131,29 +131,21 @@ except Exception as e:
 
 def calcular_promedio_total_numerico(df):
     if df is not None and not df.empty:
-        st.write("Columnas del DataFrame:", df.columns.tolist())
-        promedio_general_calculado = calcular_promedio_total_numerico(df)
-        st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
+        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+        if not columnas_numericas:
+            return 0.0
+        promedios = [df[col].mean() for col in columnas_numericas]
+        return sum(promedios) / len(promedios) if promedios else 0.0
+    return 0.0
 
-        if 'puntaje_total' in df.columns:
-            df['puntaje_total'] = pd.to_numeric(df['puntaje_total'], errors='coerce') * 100
-            promedio = df['puntaje_total'].mean()
-            if pd.isna(promedio):
-                st.write("El promedio de 'puntaje_total' no pudo ser calculado (quizás todos son valores no numéricos).")
-            else:
-                st.write(f"Promedio de 'puntaje_total': {promedio:.2f}%")
 
-        else:
-            st.write("La columna 'puntaje_total' no se encontró en el DataFrame.")
-    
+
 
 
 
 def cargar_y_mostrar_promedios(df):
     if df is not None and not df.empty:
         st.markdown("## 📊 Promedio por Columna Numérica")
-
-       
 
         columnas_numericas = df.select_dtypes(include='number').columns.tolist()
         num_columns = len(columnas_numericas)
@@ -162,9 +154,8 @@ def cargar_y_mostrar_promedios(df):
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            st.write("gonorre")
-            promedio_general_calculado = calcular_promedio_total_numerico(df)
-            st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
+            promedio_general = calcular_promedio_total_numerico(df)
+            st.metric(label="Promedio General Numérico", value=f"{promedio_general * 100:.2f}%")
 
         with col2:
             for col_name in columnas_numericas[items_per_col:items_per_col*2]:
@@ -180,10 +171,8 @@ def cargar_y_mostrar_promedios(df):
             for col_name in columnas_numericas[items_per_col*3:]:
                 promedio = df[col_name].mean()
                 st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
-
     else:
         st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
-
 def display_summary_metrics(df_puntaje, df_sentimiento):
     st.markdown("## 📋 Resumen General de Métricas")
 
@@ -206,6 +195,57 @@ def display_summary_metrics(df_puntaje, df_sentimiento):
         st.metric("Polaridad Promedio", f"{avg_polarity:.2f}")
     with col4:
         st.metric("Subjectividad Promedio", f"{avg_subjectivity:.2f}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def cargar_y_mostrar_promedios(df):
+    if df is not None and not df.empty:
+        st.markdown("## 📊 Promedio por Columna Numérica")
+
+        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+        num_columns = len(columnas_numericas)
+        items_per_col = (num_columns + 3) // 4
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            promedio_general_calculado = calcular_promedio_total_numerico(df)
+            st.metric(label="Promedio General Numérico", value=f"{promedio_general_calculado * 100:.2f}%")
+
+        with col2:
+            for col_name in columnas_numericas[items_per_col:items_per_col*2]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio:.2f}")
+
+        with col3:
+            for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
+
+        with col4:
+            for col_name in columnas_numericas[items_per_col*3:]:
+                promedio = df[col_name].mean()
+                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
+
+    else:
+        st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
+
+    
+
 
 def graficar_puntaje_total(df):
     if df is None or df.empty or 'asesor' not in df.columns or 'puntaje_total' not in df.columns:
