@@ -129,30 +129,24 @@ except Exception as e:
     print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}")
     resultados_llamadas_directo = pd.DataFrame()
 
-import streamlit as st
-
-import streamlit as st # Asegúrate de que streamlit esté importado en tu script principal
-
-import streamlit as st
-import pandas as pd # Asegúrate de que pandas esté importado
 
 def calcular_promedio_total_numerico(df):
-    # Convertir a numérico la columna 'puntaje_final_%', si existe
     promedio_puntaje_final = None
 
     if 'puntaje_final_%' in df.columns:
+        # Convertir la columna a numérico
         df['puntaje_final_%'] = pd.to_numeric(df['puntaje_final_%'], errors='coerce')
         promedio_puntaje_final = df['puntaje_final_%'].mean()
 
-    # Calcular promedio general de columnas numéricas
+    # Calcular promedio general de todas las columnas numéricas
     promedio_general = 0.0
-    if df is not None and not df.empty:
-        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        if columnas_numericas:
-            promedios_individuales = [df[col].mean() for col in columnas_numericas]
-            promedio_general = sum(promedios_individuales) / len(promedios_individuales)
+    columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+    if columnas_numericas:
+        promedios_individuales = [df[col].mean() for col in columnas_numericas]
+        promedio_general = sum(promedios_individuales) / len(promedios_individuales)
 
     return promedio_general, promedio_puntaje_final
+
 
 
 def cargar_y_mostrar_promedios(df):
@@ -169,12 +163,12 @@ def cargar_y_mostrar_promedios(df):
         with col1:
             promedio_general, promedio_final = calcular_promedio_total_numerico(df)
 
-            st.metric("Promedio General Numérico", f"{promedio_general * 100:.2f}%")
+            st.metric("Promedio General Numérico", f"{promedio_general:.2f}")
 
             if promedio_final is not None and not pd.isna(promedio_final):
                 st.metric("Promedio 'puntaje_final_%'", f"{promedio_final:.2f}%")
             else:
-                st.write("❌ 'puntaje_final_%' no se puede calcular o no existe.")
+                st.write("⚠️ No se puede calcular el promedio de 'puntaje_final_%'.")
 
         # Columna 2
         with col2:
@@ -186,13 +180,13 @@ def cargar_y_mostrar_promedios(df):
         with col3:
             for col_name in columnas_numericas[items_per_col*2:items_per_col*3]:
                 promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
+                st.metric(label=col_name, value=f"{promedio:.2f}")
 
         # Columna 4
         with col4:
             for col_name in columnas_numericas[items_per_col*3:]:
                 promedio = df[col_name].mean()
-                st.metric(label=col_name, value=f"{promedio * 100:.2f}%")
+                st.metric(label=col_name, value=f"{promedio:.2f}")
 
     else:
         st.warning("⚠️ El DataFrame está vacío o no ha sido cargado.")
