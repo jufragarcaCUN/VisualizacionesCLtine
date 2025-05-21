@@ -496,7 +496,7 @@ def main():
     st.markdown("---")
 
     mostrar_acordeones(df_acordeon)
-    cargar_y_mostrar_promedios(df_POlaVssub)
+    cargar_y_mostrar_promedios(df_resumen)
 
 
 if __name__ == '__main__':
