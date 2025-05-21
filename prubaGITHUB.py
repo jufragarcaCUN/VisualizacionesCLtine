@@ -131,7 +131,7 @@ except Exception as e:
 
 def calcular_promedio_total_numerico(df):
     if df is not None and not df.empty:
-         st.write("Columnas del DataFrame:", df.columns.tolist())
+        st.write("Columnas del DataFrame:", df.columns.tolist())
         if not columnas_numericas:
             return 0.0
 
