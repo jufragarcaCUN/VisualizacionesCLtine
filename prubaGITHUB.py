@@ -143,8 +143,7 @@ def calcular_promedio_total_numerico(df):
 
         else:
             st.write("La columna 'puntaje_total' no se encontró en el DataFrame.")
-    else:
-        st.write("El DataFrame está vacío o es None.")
+    
 
 
 
