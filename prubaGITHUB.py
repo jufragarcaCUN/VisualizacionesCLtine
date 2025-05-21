@@ -121,7 +121,7 @@ except Exception as e:
 try:
     resultados_llamadas_directo = pd.read_excel(ruta_archivo_reporte_puntaje)
     print(f"Archivo {ruta_archivo_reporte_puntaje.name} importado correctamente.")
-    print(tabulate(resultados_llamadas_directo.head(), headers='keys', tablefmt='psql'))
+
 except FileNotFoundError:
     print(f"No se encontró el archivo: {ruta_archivo_reporte_puntaje}")
     resultados_llamadas_directo = pd.DataFrame()
@@ -145,7 +145,7 @@ def cargar_y_mostrar_promedios(df):
     if df is not None and not df.empty:
         st.markdown("## 📊 Promedio por Columna Numérica")
 
-        st.write("Columnas del DataFrame:", df.columns.tolist())
+        #st.write("Columnas del DataFrame:", df.columns.tolist())
 
         columnas_numericas = df.select_dtypes(include='number').columns.tolist()
         num_columns = len(columnas_numericas)
