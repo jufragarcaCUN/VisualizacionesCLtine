@@ -131,7 +131,7 @@ except Exception as e:
 
 import streamlit as st
 
-def calcular_promedio_total_numerico(df):
+def calcular_promedio_total_numerico():
     st.write("Hola") # Esto imprimirá solo "Hola" en tu aplicación Streamlit
     return # <--- Si hay un 'return' aquí, la función termina inmediatamente.
            # Todo el código de cálculo (if df is not None..., etc.) NUNCA se ejecutará.
