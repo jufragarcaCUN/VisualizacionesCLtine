@@ -134,12 +134,13 @@ def calcular_promedio_total_numerico(df):
         st.write("Columnas del DataFrame:", df.columns.tolist())
 
         if 'puntaje_total' in df.columns:
-            df['puntaje_total'] = pd.to_numeric(df['puntaje_total'], errors='coerce')
+            df['puntaje_total'] = pd.to_numeric(df['puntaje_total'], errors='coerce') * 100
             promedio = df['puntaje_total'].mean()
-            if pd.isna(promedio):
-                st.write("El promedio de 'puntaje_total' no pudo ser calculado (quizás todos son valores no numéricos).")
-            else:
-                st.write(f"Promedio de 'puntaje_total': {promedio:.2f}")
+        if pd.isna(promedio):
+            st.write("El promedio de 'puntaje_total' no pudo ser calculado (quizás todos son valores no numéricos).")
+        else:
+            st.write(f"Promedio de 'puntaje_total': {promedio:.2f}%")
+
         else:
             st.write("La columna 'puntaje_total' no se encontró en el DataFrame.")
     else:
