@@ -127,7 +127,17 @@ except Exception as e:
 
 
 # ---
-# La función 'display_summary_metrics' y su llamada han sido eliminadas.
+with col1:
+    st.write("hola")
+
+with col2:
+    st.write("hola")
+
+with col3:
+    st.write("hola")
+
+with col4:
+    st.write("hola")
 # ---
 
 def graficar_puntaje_total(df):
