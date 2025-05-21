@@ -129,14 +129,18 @@ except Exception as e:
     print(f"Error al importar el archivo {ruta_archivo_reporte_puntaje.name}: {e}")
     resultados_llamadas_directo = pd.DataFrame()
 
-def calcular_promedio_total_numerico(df):
+def calcular_promedio_puntaje_total(df):
     if df is not None and not df.empty:
-        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-        if not columnas_numericas:
+        if 'puntaje_total' in df.columns:
+            # Convertir a numérico por si acaso y eliminar NaNs
+            puntaje = pd.to_numeric(df['puntaje_total'], errors='coerce').dropna()
+            if len(puntaje) == 0:
+                return 0.0
+            return puntaje.mean()
+        else:
             return 0.0
-        promedios = [df[col].mean() for col in columnas_numericas]
-        return sum(promedios) / len(promedios) if promedios else 0.0
     return 0.0
+
 
 # Ejemplo de uso en Streamlit
 def mostrar_promedio_general(df):
