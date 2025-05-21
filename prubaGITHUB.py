@@ -131,21 +131,35 @@ except Exception as e:
 
 
 def calcular_promedio_total_numerico(df):
-    promedio_puntaje_final = None
+    st.write("Hola")
+    st.write("Columnas del DataFrame recibido:", df.columns.tolist())
 
+    # --- Calcular y mostrar el promedio de 'puntaje_final_%' ---
     if 'puntaje_final_%' in df.columns:
-        # Convertir la columna a numérico
+        # Convertir a numérico, forzando errores a NaN
         df['puntaje_final_%'] = pd.to_numeric(df['puntaje_final_%'], errors='coerce')
+        # Calcular el promedio ignorando NaN
         promedio_puntaje_final = df['puntaje_final_%'].mean()
+        
+        if pd.isna(promedio_puntaje_final):
+            st.write("El promedio de 'puntaje_final_%' no pudo ser calculado (quizás todos son valores no numéricos).")
+        else:
+            st.write(f"Promedio de 'puntaje_final_%': {promedio_puntaje_final:.2f}%")
+    else:
+        st.write("La columna 'puntaje_final_%' no se encontró en el DataFrame.")
+   
 
-    # Calcular promedio general de todas las columnas numéricas
-    promedio_general = 0.0
-    columnas_numericas = df.select_dtypes(include='number').columns.tolist()
-    if columnas_numericas:
+    if df is not None and not df.empty:
+        columnas_numericas = df.select_dtypes(include='number').columns.tolist()
+        if not columnas_numericas:
+            return 0.0
+
         promedios_individuales = [df[col].mean() for col in columnas_numericas]
-        promedio_general = sum(promedios_individuales) / len(promedios_individuales)
 
-    return promedio_general, promedio_puntaje_final
+        return sum(promedios_individuales) / len(promedios_individuales) if promedios_individuales else 0.0
+
+    return 0.0
+
 
 
 
