@@ -214,7 +214,7 @@ def graficar_asesores_metricas_heatmap(df):
         dict(
             type="line",
             x0=i-0.5, x1=i-0.5,
-            y0=-0.5,                # Borde superior exacto
+             y0=0.5,                # Borde superior de la segunda filato
             y1=num_filas-0.5,       # Borde inferior exacto
             line=dict(color="grey", width=3)
         )
