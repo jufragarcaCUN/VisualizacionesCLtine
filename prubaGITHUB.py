@@ -217,7 +217,7 @@ def graficar_asesores_metricas_heatmap(df):
         dict(
             type="line",
             x0=i-0.5, x1=i-0.5,
-            y0=0,          # <-- Arranca en la primera fila
+            y0=1,          # <-- Arranca en la primera fila
              y1=num_filas-1,      # Termina en la última fila
             line=dict(color="grey", width=3)
         )
