@@ -221,7 +221,7 @@ def graficar_asesores_metricas_heatmap(df):
         dict(
             type="line",
             x0=i-0.5, x1=i-0.5,
-            y0=asesores[0],      # Primer asesor (arriba)
+            y0=asesores[1],      # Primer asesor (arriba)
             y1=asesores[-1],     # Último asesor (abajo)
             xref='x', yref='y',
             line=dict(color="grey", width=2)
