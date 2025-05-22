@@ -228,13 +228,15 @@ def graficar_asesores_metricas_heatmap(df):
         st.warning("⚠️ Después de limpiar, el DataFrame para el heatmap está vacío.")
         return
 
-    # Crear líneas rojas verticales para separar las métricas
+    # Crear líneas grises verticales más cortas para separar las métricas
     num_metricas = len(df_heatmap_data.columns)
+    num_filas = len(df_heatmap_data.index)
+    margen = 0.3  # Ajusta este valor para más o menos margen (más alto = más corta la línea)
     shapes = [
         dict(
             type="line",
             x0=i-0.5, x1=i-0.5,
-            y0=-0.5, y1=len(df_heatmap_data.index)-0.5,
+            y0=0 + margen, y1=num_filas-1 - margen,
             line=dict(color="grey", width=3)
         )
         for i in range(1, num_metricas)
@@ -253,10 +255,10 @@ def graficar_asesores_metricas_heatmap(df):
         xaxis_title="Métrica (%)",
         yaxis_title="Asesor",
         font=dict(family="Arial", size=12),
-        height=700,#### ¿este es el alto de las lineas rojas?
+        height=700,
         title_x=0.5,
         plot_bgcolor='white',
-        shapes=shapes  # <--- Aquí se agregan las líneas rojas
+        shapes=shapes  # <--- Aquí se agregan las líneas grises cortas
     )
     st.plotly_chart(fig, use_container_width=True, key="heatmap_metrics_chart")
 
