@@ -230,7 +230,7 @@ def graficar_asesores_metricas_heatmap(df):
         height=700,
         title="Heatmap: Asesor vs. Métricas con Porcentaje (%)",
         title_x=0.5,
-        plot_bgcolor='white'
+        plot_bgcolor='grey'
     )
     st.plotly_chart(fig, use_container_width=True)  
     #######################no moveo de aqui en adelante########################
