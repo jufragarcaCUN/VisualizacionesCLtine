@@ -211,17 +211,18 @@ def graficar_asesores_metricas_heatmap(df):
     # Crear líneas grises verticales más cortas para separar las métricas
     num_metricas = len(df_heatmap_data.columns)
     num_filas = len(df_heatmap_data.index)
-    centro = num_filas / 2
-    largo = max(1, num_filas * 0.5)  # 50% del alto, ajusta este valor para más/menos largo
+    altura = num_filas / 2  # La línea llegará hasta la mitad del heatmap
+    
     shapes = [
         dict(
             type="line",
             x0=i-0.5, x1=i-0.5,
-            y0=centro - largo/2, y1=centro + largo/2,
+            y0=0,              # <-- Arranca en la primera fila
+            y1=altura,         # <-- Termina en la mitad del heatmap
             line=dict(color="grey", width=3)
         )
         for i in range(1, num_metricas)
-    ]
+    ]]
 
     fig = go.Figure(data=go.Heatmap(
         z=df_heatmap_data.values,
