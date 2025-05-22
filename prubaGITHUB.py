@@ -216,7 +216,7 @@ def graficar_asesores_metricas_heatmap(df):
             type="line",
             x0=i-0.5, x1=i-0.5,
             y0=-0.5, y1=len(df_heatmap_data.index)-0.5,
-            line=dict(color="grey", width=20)
+            line=dict(color="grey", width=3)
         )
         for i in range(1, num_metricas)
     ]
