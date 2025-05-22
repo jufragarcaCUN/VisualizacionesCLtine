@@ -210,6 +210,25 @@ def graficar_asesores_metricas_heatmap(df):
         return
 
     # Crear líneas rojas verticales para separar las métricas
+    #######################poner las lineas rojas########################
+
+def graficar_asesores_metricas_heatmap(df):
+    if df is None or df.empty or 'asesor' not in df.columns:
+        st.warning("⚠️ Datos incompletos o faltan columnas necesarias ('asesor') para la gráfica heatmap.")
+        return
+    metric_cols = [col for col in df.columns if '%' in col]
+    if not metric_cols:
+        st.warning("⚠️ No se encontraron columnas con '%' en el DataFrame para graficar el heatmap.")
+        return
+    df['asesor'] = df['asesor'].apply(corregir_nombre)
+    df_heatmap_data = df[['asesor'] + metric_cols].copy()
+    df_heatmap_data = df_heatmap_data.set_index('asesor')
+    df_heatmap_data = df_heatmap_data.apply(pd.to_numeric, errors='coerce').fillna(0)
+    if df_heatmap_data.empty:
+        st.warning("⚠️ Después de limpiar, el DataFrame para el heatmap está vacío.")
+        return
+
+    # Crear líneas rojas verticales para separar las métricas
     num_metricas = len(df_heatmap_data.columns)
     shapes = [
         dict(
@@ -234,7 +253,29 @@ def graficar_asesores_metricas_heatmap(df):
         xaxis_title="Métrica (%)",
         yaxis_title="Asesor",
         font=dict(family="Arial", size=12),
-        height=700,
+        height=700,#### ¿este es el alto de las lineas rojas?
+        title_x=0.5,
+        plot_bgcolor='white',
+        shapes=shapes  # <--- Aquí se agregan las líneas rojas
+    )
+    st.plotly_chart(fig, use_container_width=True, key="heatmap_metrics_chart")
+
+#######################poner las lineas rojas########################
+
+    fig = go.Figure(data=go.Heatmap(
+        z=df_heatmap_data.values,
+        x=df_heatmap_data.columns,
+        y=df_heatmap_data.index,
+        colorscale='Greens',
+        colorbar=dict(title=dict(text="Valor (%)", font=dict(size=24)), tickfont=dict(size=24)),
+        hovertemplate='Asesor: %{y}<br>Métrica: %{x}<br>Valor: %{z:.2f}%<extra></extra>'
+    ))
+    fig.update_layout(
+        title="Heatmap: Asesor vs. Métricas con Porcentaje (%)",
+        xaxis_title="Métrica (%)",
+        yaxis_title="Asesor",
+        font=dict(family="Arial", size=12),
+        height=700,#### ¿este es el alto de las lineas rojas?
         title_x=0.5,
         plot_bgcolor='white',
         shapes=shapes  # <--- Aquí se agregan las líneas rojas
