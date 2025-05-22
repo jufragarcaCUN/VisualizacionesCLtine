@@ -214,7 +214,7 @@ def graficar_asesores_metricas_heatmap(df):
         st.warning("⚠️ Después de limpiar, el DataFrame para el heatmap está vacío.")
         return
 
-    # Usar px.imshow para crear el heatmap con separación visual entre celdas
+    # Crear el heatmap con separación solo entre columnas (xgap)
     fig = px.imshow(
         df_heatmap_data.values,
         labels=dict(x="Métrica (%)", y="Asesor", color="Valor (%)"),
@@ -223,7 +223,8 @@ def graficar_asesores_metricas_heatmap(df):
         color_continuous_scale='Greens',
         aspect="auto",
     )
-    fig.update_traces(xgap=2, ygap=2)  # Espacio entre celdas (borde visual)
+    fig.update_traces(xgap=2, ygap=0)  # Solo separación vertical entre columnas
+
     fig.update_layout(
         font=dict(family="Arial", size=12),
         height=700,
@@ -231,7 +232,8 @@ def graficar_asesores_metricas_heatmap(df):
         title_x=0.5,
         plot_bgcolor='white'
     )
-    st.plotly_chart(fig, use_container_width=True)    #######################no moveo de aqui en adelante########################
+    st.plotly_chart(fig, use_container_width=True)  
+    #######################no moveo de aqui en adelante########################
 
 def graficar_polaridad_subjetividad_gauges(df):
     if df is None or df.empty:
