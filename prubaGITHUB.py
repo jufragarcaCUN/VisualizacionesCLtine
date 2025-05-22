@@ -192,10 +192,13 @@ def graficar_puntaje_total(df):
 
 
 #######################poner las lineas rojas########################
+import plotly.express as px
+
 def graficar_asesores_metricas_heatmap(df):
     if df is None or df.empty or 'asesor' not in df.columns:
         st.warning("⚠️ Datos incompletos o faltan columnas necesarias ('asesor') para la gráfica heatmap.")
         return
+
     metric_cols = [col for col in df.columns if '%' in col]
     if not metric_cols:
         st.warning("⚠️ No se encontraron columnas con '%' en el DataFrame para graficar el heatmap.")
@@ -211,46 +214,24 @@ def graficar_asesores_metricas_heatmap(df):
         st.warning("⚠️ Después de limpiar, el DataFrame para el heatmap está vacío.")
         return
 
-    num_metricas = len(df_heatmap_data.columns)
-    asesores = list(df_heatmap_data.index)
-    if not asesores:
-        st.warning("⚠️ No hay asesores válidos para graficar.")
-        return
-
-    num_metricas = len(df_heatmap_data.columns)
-    num_filas = len(df_heatmap_data.index)
-    shapes = [
-        dict(
-            type="line",
-            x0=i-0.5, x1=i-0.5,
-            y0=-0.5,                # Extremo superior
-            y1=num_filas-0.5,       # Extremo inferior
-            xref='x', yref='y',
-            line=dict(color="grey", width=2)
-        )
-        for i in range(1, num_metricas)
-    ]
-
-    fig = go.Figure(data=go.Heatmap(
-        z=df_heatmap_data.values,
+    # Usar px.imshow para crear el heatmap con separación visual entre celdas
+    fig = px.imshow(
+        df_heatmap_data.values,
+        labels=dict(x="Métrica (%)", y="Asesor", color="Valor (%)"),
         x=df_heatmap_data.columns,
         y=df_heatmap_data.index,
-        colorscale='Greens',
-        colorbar=dict(title=dict(text="Valor (%)", font=dict(size=24)), tickfont=dict(size=24)),
-        hovertemplate='Asesor: %{y}<br>Métrica: %{x}<br>Valor: %{z:.2f}%<extra></extra>'
-    ))
+        color_continuous_scale='Greens',
+        aspect="auto",
+    )
+    fig.update_traces(xgap=2, ygap=2)  # Espacio entre celdas (borde visual)
     fig.update_layout(
-        title="Heatmap: Asesor vs. Métricas con Porcentaje (%)",
-        xaxis_title="Métrica (%)",
-        yaxis_title="Asesor",
         font=dict(family="Arial", size=12),
         height=700,
+        title="Heatmap: Asesor vs. Métricas con Porcentaje (%)",
         title_x=0.5,
-        plot_bgcolor='white',
-        shapes=shapes
+        plot_bgcolor='white'
     )
-    st.plotly_chart(fig, use_container_width=True, key="heatmap_metrics_chart")
-    #######################no moveo de aqui en adelante########################
+    st.plotly_chart(fig, use_container_width=True)    #######################no moveo de aqui en adelante########################
 
 def graficar_polaridad_subjetividad_gauges(df):
     if df is None or df.empty:
