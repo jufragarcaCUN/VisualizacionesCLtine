@@ -190,6 +190,9 @@ def graficar_puntaje_total(df):
     )
     st.plotly_chart(fig, use_container_width=True, key="puntaje_total_chart")
 
+
+#######################poner las lineas rojas########################
+
 def graficar_asesores_metricas_heatmap(df):
     if df is None or df.empty or 'asesor' not in df.columns:
         st.warning("⚠️ Datos incompletos o faltan columnas necesarias ('asesor') para la gráfica heatmap.")
@@ -205,20 +208,40 @@ def graficar_asesores_metricas_heatmap(df):
     if df_heatmap_data.empty:
         st.warning("⚠️ Después de limpiar, el DataFrame para el heatmap está vacío.")
         return
+
+    # Crear líneas rojas verticales para separar las métricas
+    num_metricas = len(df_heatmap_data.columns)
+    shapes = [
+        dict(
+            type="line",
+            x0=i-0.5, x1=i-0.5,
+            y0=-0.5, y1=len(df_heatmap_data.index)-0.5,
+            line=dict(color="red", width=2)
+        )
+        for i in range(1, num_metricas)
+    ]
+
     fig = go.Figure(data=go.Heatmap(
-        z=df_heatmap_data.values, x=df_heatmap_data.columns, y=df_heatmap_data.index,
+        z=df_heatmap_data.values,
+        x=df_heatmap_data.columns,
+        y=df_heatmap_data.index,
         colorscale='Greens',
         colorbar=dict(title=dict(text="Valor (%)", font=dict(size=24)), tickfont=dict(size=24)),
         hovertemplate='Asesor: %{y}<br>Métrica: %{x}<br>Valor: %{z:.2f}%<extra></extra>'
     ))
     fig.update_layout(
         title="Heatmap: Asesor vs. Métricas con Porcentaje (%)",
-        xaxis_title="Métrica (%)", yaxis_title="Asesor",
+        xaxis_title="Métrica (%)",
+        yaxis_title="Asesor",
         font=dict(family="Arial", size=12),
         height=700,
-        title_x=0.5, plot_bgcolor='white'
+        title_x=0.5,
+        plot_bgcolor='white',
+        shapes=shapes  # <--- Aquí se agregan las líneas rojas
     )
     st.plotly_chart(fig, use_container_width=True, key="heatmap_metrics_chart")
+
+#######################poner las lineas rojas########################
 
 def graficar_polaridad_subjetividad_gauges(df):
     if df is None or df.empty:
