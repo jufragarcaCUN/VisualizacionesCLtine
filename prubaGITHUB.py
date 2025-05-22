@@ -210,13 +210,13 @@ def graficar_asesores_metricas_heatmap(df):
 
     num_metricas = len(df_heatmap_data.columns)
     num_filas = len(df_heatmap_data.index)
+    # Líneas verticales que recorren todo el alto del heatmap
     shapes = [
         dict(
             type="line",
             x0=i-0.5, x1=i-0.5,
-             y0=0.5,                # Borde superior de la segunda filato
-            y1=num_filas-0.5,       # Borde inferior exacto
-            line=dict(color="grey", width=3)
+            y0=-0.5, y1=num_filas-0.5,  # De arriba a abajo del heatmap
+            line=dict(color="grey", width=2)
         )
         for i in range(1, num_metricas)
     ]
@@ -237,10 +237,10 @@ def graficar_asesores_metricas_heatmap(df):
         height=700,
         title_x=0.5,
         plot_bgcolor='white',
-        shapes=shapes
+        shapes=shapes  # <--- Aquí se agregan las líneas verticales divisorias
     )
     st.plotly_chart(fig, use_container_width=True, key="heatmap_metrics_chart")
-#######################no moveo de aqui en adelante########################
+    #######################no moveo de aqui en adelante########################
 
 def graficar_polaridad_subjetividad_gauges(df):
     if df is None or df.empty:
