@@ -200,6 +200,9 @@ def graficar_asesores_metricas_heatmap(df):
     if not metric_cols:
         st.warning("⚠️ No se encontraron columnas con '%' en el DataFrame para graficar el heatmap.")
         return
+
+    # Elimina filas con asesores vacíos o nulos
+    df = df[df['asesor'].notnull() & (df['asesor'] != "")]
     df['asesor'] = df['asesor'].apply(corregir_nombre)
     df_heatmap_data = df[['asesor'] + metric_cols].copy()
     df_heatmap_data = df_heatmap_data.set_index('asesor')
@@ -208,14 +211,18 @@ def graficar_asesores_metricas_heatmap(df):
         st.warning("⚠️ Después de limpiar, el DataFrame para el heatmap está vacío.")
         return
 
-    num_metricas = len(df_heatmap_data.columns)  # <-- ¡Agrega esta línea!
+    num_metricas = len(df_heatmap_data.columns)
     asesores = list(df_heatmap_data.index)
+    if not asesores:
+        st.warning("⚠️ No hay asesores válidos para graficar.")
+        return
+
     shapes = [
         dict(
             type="line",
             x0=i-0.5, x1=i-0.5,
-            y0=asesores[0],          # Arranca en el primer asesor
-            y1=asesores[-1],         # Termina en el último asesor
+            y0=asesores[0],      # Primer asesor (arriba)
+            y1=asesores[-1],     # Último asesor (abajo)
             xref='x', yref='y',
             line=dict(color="grey", width=2)
         )
@@ -238,7 +245,7 @@ def graficar_asesores_metricas_heatmap(df):
         height=700,
         title_x=0.5,
         plot_bgcolor='white',
-        shapes=shapes  # <--- Aquí se agregan las líneas verticales divisorias
+        shapes=shapes
     )
     st.plotly_chart(fig, use_container_width=True, key="heatmap_metrics_chart")
     #######################no moveo de aqui en adelante########################
