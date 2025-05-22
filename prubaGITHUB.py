@@ -208,18 +208,18 @@ def graficar_asesores_metricas_heatmap(df):
         st.warning("⚠️ Después de limpiar, el DataFrame para el heatmap está vacío.")
         return
 
-    num_metricas = len(df_heatmap_data.columns)
-    num_filas = len(df_heatmap_data.index)
-    # Líneas verticales que recorren todo el alto del heatmap
-    shapes = [
-        dict(
-            type="line",
-            x0=i-0.5, x1=i-0.5,
-            y0=-0.5, y1=num_filas-0.5,  # De arriba a abajo del heatmap
-            line=dict(color="grey", width=2)
-        )
-        for i in range(1, num_metricas)
-    ]
+    asesores = list(df_heatmap_data.index)
+        shapes = [
+            dict(
+                type="line",
+                x0=i-0.5, x1=i-0.5,
+                y0=asesores[0],          # Arranca en el primer asesor
+                y1=asesores[-1],         # Termina en el último asesor
+                xref='x', yref='y',
+                line=dict(color="grey", width=2)
+            )
+            for i in range(1, num_metricas)
+        ]
 
     fig = go.Figure(data=go.Heatmap(
         z=df_heatmap_data.values,
