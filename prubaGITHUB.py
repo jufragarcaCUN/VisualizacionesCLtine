@@ -209,7 +209,7 @@ def graficar_asesores_metricas_heatmap(df):
         return
 
     asesores = list(df_heatmap_data.index)
-        shapes = [
+    shapes = [
             dict(
                 type="line",
                 x0=i-0.5, x1=i-0.5,
